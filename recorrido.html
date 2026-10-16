@@ -1,32 +1,37 @@
 <!doctype html><html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Planta MangoSol 3D</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<link rel="stylesheet" href="lib/fonts.css">
 <style>
 /* Recorrido 3D de la planta: misma distribución en U del informe (1 unidad = 1 m) */
 :root{--osc:#13201A;--pan:rgba(19,32,26,.9);--nar:#F0A030;--cre:#F3EDE2;--gri:#8C978F;--lin:#2E4237}
 html,body{margin:0;height:100%;overflow:hidden;background:var(--osc);font-family:'IBM Plex Sans',Arial,sans-serif;color:var(--cre)}
 canvas#c{display:block;width:100%;height:100%}
 .mono{font-family:'IBM Plex Mono',Consolas,monospace}
-#area{position:fixed;left:24px;top:20px;max-width:46vw;pointer-events:none}
-#area .chip{display:inline-block;font:500 13px 'IBM Plex Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:4px;background:var(--pan);color:var(--nar)}
-#area h1{margin:8px 0 4px;font:800 34px/1.1 'Bricolage Grotesque',Georgia,sans-serif;text-shadow:0 2px 12px rgba(0,0,0,.55)}
-#area p{margin:0;font:500 14px 'IBM Plex Mono',monospace;color:var(--cre);text-shadow:0 1px 6px rgba(0,0,0,.8)}
-#mini{position:fixed;right:20px;top:20px;width:280px;height:192px;border-radius:6px;background:var(--pan);border:1px solid var(--lin)}
+#area{position:fixed;left:20px;top:20px;max-width:min(46vw,640px);pointer-events:none;background:var(--pan);border:1px solid var(--lin);border-radius:6px;padding:clamp(10px,.8vw,16px) clamp(14px,1.1vw,22px)}
+#area .chip{display:block;font:500 clamp(12px,.75vw,15px) 'IBM Plex Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--nar)}
+#area h1{margin:4px 0 6px;font:800 clamp(26px,2.1vw,44px)/1.1 'Bricolage Grotesque',Georgia,sans-serif;letter-spacing:-.02em}
+#area p{margin:0;font:500 clamp(13px,.85vw,17px) 'IBM Plex Mono',monospace;color:#C9D3CB}
+#mini{position:fixed;right:20px;top:20px;width:var(--mw);aspect-ratio:560/384;border-radius:6px;background:var(--pan);border:1px solid var(--lin)}
+:root{--mw:clamp(240px,15vw,320px)}
 #cross{position:fixed;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:rgba(243,237,226,.75);pointer-events:none}
-#help{position:fixed;left:24px;bottom:18px;font:500 13px 'IBM Plex Mono',monospace;color:var(--cre);background:var(--pan);padding:8px 12px;border-radius:6px;max-width:calc(100vw - 48px)}
-#card{position:fixed;right:20px;top:228px;bottom:20px;width:400px;overflow:auto;background:var(--pan);border:1px solid var(--lin);border-left:4px solid var(--nar);border-radius:6px;padding:20px 22px;display:none}
+#help{position:fixed;left:20px;bottom:18px;font:500 clamp(13px,.8vw,17px) 'IBM Plex Mono',monospace;color:var(--cre);background:var(--pan);padding:8px 12px;border-radius:6px;max-width:calc(100vw - 40px)}
+/* ficha: pensada para leerse proyectada (≥ 20 px a 1080p); el detalle del expositor va oculto */
+#card{position:fixed;right:20px;top:calc(36px + var(--mw) * 384 / 560);max-height:calc(100vh - 56px - var(--mw) * 384 / 560);box-sizing:border-box;width:clamp(380px,28vw,560px);overflow:auto;overscroll-behavior:contain;background:var(--pan);border:1px solid var(--lin);border-radius:6px;padding:clamp(18px,1.3vw,28px);display:none;scrollbar-color:var(--gri) transparent}
 #card.on{display:block}
-#card h2{margin:6px 0 6px;font:800 26px/1.15 'Bricolage Grotesque',Georgia,sans-serif}
-#card .dop{font:500 13px 'IBM Plex Mono',monospace;color:var(--gri);margin-bottom:10px}
-#card p{margin:0 0 12px;font-size:15px;line-height:1.45}
-#card table{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:12px}
-#card td{padding:6px 4px;border-top:1px solid var(--lin);vertical-align:top}
-#card td:first-child{color:var(--gri);width:40%}
-#card .calc{font:500 13px/1.5 'IBM Plex Mono',monospace;color:var(--osc);background:var(--nar);padding:10px 12px;border-radius:4px;margin-bottom:12px}
-#card .tip{font-size:14px;line-height:1.45;color:#D8E0D9;border-left:2px solid var(--gri);padding-left:10px}
-#card .cerrar{font:500 12px 'IBM Plex Mono',monospace;color:var(--gri);margin-top:14px}
-#toast{position:fixed;left:50%;top:20px;transform:translateX(-50%);background:var(--nar);color:var(--osc);font-weight:600;padding:8px 16px;border-radius:6px;opacity:0;transition:opacity .25s;pointer-events:none}
+#card .tag{font:500 clamp(12px,.75vw,15px) 'IBM Plex Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--nar)}
+#card h2{margin:6px 0 10px;font:800 clamp(26px,2vw,40px)/1.12 'Bricolage Grotesque',Georgia,sans-serif;letter-spacing:-.02em}
+#card p{margin:0 0 14px;font-size:clamp(17px,1.15vw,23px);line-height:1.45}
+#card table{width:100%;border-collapse:collapse;font-size:clamp(16px,1.1vw,22px);margin-bottom:14px;font-variant-numeric:tabular-nums}
+#card td{padding:.4em .2em;border-top:1px solid var(--lin);vertical-align:top}
+#card td:first-child{color:#AEB9B0;width:38%}
+#card .calc{font:500 clamp(15px,1vw,20px)/1.5 'IBM Plex Mono',monospace;color:var(--osc);background:var(--nar);padding:.6em .8em;border-radius:4px;margin-bottom:14px}
+#card .exp{border-top:1px dashed var(--gri);padding-top:12px;margin-top:4px}
+#card .exp .k{font:500 clamp(12px,.75vw,15px) 'IBM Plex Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--gri);margin-bottom:6px}
+#card .dop{font:500 clamp(13px,.85vw,17px) 'IBM Plex Mono',monospace;color:#AEB9B0;margin-bottom:10px}
+#card .tip{font-size:clamp(15px,1vw,20px);line-height:1.45;color:#D8E0D9}
+#card .cerrar{font:500 clamp(12px,.8vw,16px) 'IBM Plex Mono',monospace;color:#AEB9B0;margin-top:14px}
+#toast{position:fixed;left:50%;top:20px;transform:translateX(-50%);background:var(--nar);color:var(--osc);font-weight:600;font-size:clamp(15px,1vw,20px);padding:8px 16px;border-radius:6px;opacity:0;transition:opacity .25s;pointer-events:none}
 #toast.on{opacity:1}
 #mapa{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(19,32,26,.82)}
 #mapa.on{display:flex}
@@ -36,17 +41,17 @@ canvas#c{display:block;width:100%;height:100%}
 #menu .box{width:min(860px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;padding:32px}
 #menu .k{font:500 14px 'IBM Plex Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:var(--nar)}
 #menu h1{margin:8px 0 10px;font:800 46px/1.05 'Bricolage Grotesque',Georgia,sans-serif}
-#menu p{font-size:17px;line-height:1.5;color:#D8E0D9;margin:0 0 20px}
+#menu p{font-size:17px;line-height:1.5;color:#D8E0D9;margin:0 0 20px;max-width:68ch}
 #menu .cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:22px}
 #menu .col{background:#1C2B23;border:1px solid var(--lin);border-radius:6px;padding:14px 16px}
-#menu .col h3{margin:0 0 8px;font-size:16px}
+#menu .col h2{margin:0 0 8px;font-size:16px}
 #menu .col div{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:4px 0;border-top:1px solid var(--lin)}
 #menu .col b{font:500 13px 'IBM Plex Mono',monospace;color:var(--nar);white-space:nowrap}
 #menu button{font:700 20px 'IBM Plex Sans',Arial,sans-serif;background:var(--nar);color:var(--osc);border:0;border-radius:6px;padding:14px 26px;cursor:pointer}
 #menu a{color:var(--cre);margin-left:18px;font-size:16px}
 #pad{font:500 14px 'IBM Plex Mono',monospace;color:var(--gri);margin-top:16px}
 #pad.ok{color:var(--nar)}
-@media (max-width:700px){#menu .cols{grid-template-columns:1fr}#mini{width:180px;height:124px}#card{width:auto;left:20px;top:auto;height:50vh}}
+@media (max-width:700px){:root{--mw:130px}#menu .cols{grid-template-columns:1fr}#area{max-width:calc(100vw - var(--mw) - 56px)}#area h1{font-size:22px}#card{width:auto;left:20px;top:auto;bottom:96px;max-height:55vh}}
 </style></head><body>
 <canvas id="c"></canvas>
 <div id="cross"></div>
@@ -61,16 +66,16 @@ canvas#c{display:block;width:100%;height:100%}
  <h1>Recorre la planta de mango deshidratado</h1>
  <p>Es la misma distribución en U del informe (nave de 40 × 25 m en Sullana). Camina por las ocho áreas del proceso y los servicios; en cada una abre su ficha para ver el balance de materia, los puntos críticos de control y de dónde sale cada número.</p>
  <div class="cols">
-  <div class="col"><h3>Teclado y mouse</h3>
+  <div class="col"><h2>Teclado y mouse</h2>
    <div><span>Moverse</span><b>W A S D / flechas</b></div><div><span>Mirar</span><b>Mouse</b></div>
    <div><span>Correr</span><b>Shift</b></div><div><span>Ficha del área</span><b>E</b></div>
    <div><span>Mapa</span><b>M</b></div><div><span>Ir a un área</span><b>1–8 · 9 solar · 0 exterior</b></div>
-   <div><span>Área anterior / siguiente</span><b>Q / R</b></div><div><span>Pausa</span><b>Esc</b></div></div>
-  <div class="col"><h3>Mando (Xbox, PlayStation u otro)</h3>
+   <div><span>Área anterior / siguiente</span><b>Q / R</b></div><div><span>Detalle para el expositor</span><b>T</b></div><div><span>Desplazar la ficha</span><b>Rueda del mouse</b></div><div><span>Pausa / continuar</span><b>Esc / Enter</b></div></div>
+  <div class="col"><h2>Mando (Xbox, PlayStation u otro)</h2>
    <div><span>Moverse</span><b>Stick izquierdo</b></div><div><span>Mirar</span><b>Stick derecho</b></div>
    <div><span>Correr</span><b>RT / R2</b></div><div><span>Ficha del área</span><b>A / ✕</b></div>
    <div><span>Cerrar</span><b>B / ○</b></div><div><span>Mapa</span><b>Y / △</b></div>
-   <div><span>Área anterior / siguiente</span><b>LB / RB · L1 / R1</b></div><div><span>Pausa</span><b>Start / Options</b></div></div>
+   <div><span>Área anterior / siguiente</span><b>LB / RB · L1 / R1</b></div><div><span>Detalle para el expositor</span><b>X / □</b></div><div><span>Desplazar la ficha</span><b>Cruceta ↑ ↓</b></div><div><span>Pausa / continuar</span><b>Start / Options</b></div></div>
  </div>
  <button id="go">Empezar recorrido</button><a href="index.html#/planta">← Volver a la presentación</a>
  <div id="pad">Mando: no detectado. Conéctalo y presiona cualquier botón.</div>
@@ -417,9 +422,13 @@ const $=id=>document.getElementById(id);
 let cur='',cardOn=false,mapOn=false,playing=false,padOn=false;
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove('on'),1600)}
 let cerca=false;
-function renderCard(){const d=INFO[cerca?'ing':cur];$('card').innerHTML=`<span class="chip mono" style="color:#F0A030;font-size:12px;letter-spacing:1.5px;text-transform:uppercase">${d.z}</span>
- <h2>${d.t}</h2><div class="dop">DOP: ${d.d}</div><p>${d.r}</p><table>${d.f.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table>
- ${d.c?`<div class="calc">${d.c}</div>`:''}<div class="tip"><b>Para la exposición:</b> ${d.p}</div><div class="cerrar">${padOn?'A / ✕ o B / ○':'E'} para cerrar</div>`}
+let expOn=false;
+const filas=f=>f.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('');
+function renderCard(){const d=INFO[cerca?'ing':cur],extra=d.f.slice(3);
+ $('card').innerHTML=`<span class="tag">${d.z}</span><h2>${d.t}</h2><p>${d.r}</p><table>${filas(d.f.slice(0,3))}</table>
+ ${d.c?`<div class="calc">${d.c}</div>`:''}
+ <div class="exp"${expOn?'':' hidden'}><div class="k">Para el expositor</div><div class="dop">DOP: ${d.d}</div>${extra.length?`<table>${filas(extra)}</table>`:''}<div class="tip">${d.p}</div></div>
+ <div class="cerrar">${padOn?'A cerrar · X detalle · cruceta ↑ ↓ desplazar':'E cerrar · T detalle · rueda desplazar'}</div>`}
 function setCard(v){cardOn=v;$('card').classList.toggle('on',v);if(v)renderCard()}
 function setMap(v){mapOn=v;$('mapa').classList.toggle('on',v)}
 function hud(){const c=Math.hypot(P.x-ING.x,P.z-ING.z)<3;if(c!==cerca){cerca=c;hint();if(cardOn)renderCard()}
@@ -449,12 +458,15 @@ function drawMap(cv,big){const g=cv.getContext('2d'),W=cv.width,Hh=cv.height,sx=
  g.fillStyle='#F0A030';g.beginPath();g.moveTo(px+fx*k,pz+fz*k);g.lineTo(px-fz*k*.55-fx*k*.5,pz+fx*k*.55-fz*k*.5);g.lineTo(px+fz*k*.55-fx*k*.5,pz-fx*k*.55-fz*k*.5);g.closePath();g.fill()}
 
 // ---------- Entrada: teclado, mouse y mando ----------
-const keys=new Set();
-addEventListener('keydown',e=>{keys.add(e.code);if(!playing)return;
+const keys=new Set(),RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+addEventListener('keydown',e=>{keys.add(e.code);
+ if(!playing){if((e.code==='Enter'||e.code==='Space')&&!$('menu').classList.contains('off')){e.preventDefault();$('go').click()}return}
+ if(e.code==='Escape'){pause();return}
+ if(e.code==='KeyT'){expOn=!expOn;if(cardOn)renderCard()}
  if(e.code==='KeyE')setCard(!cardOn);
  if(e.code==='KeyM')setMap(!mapOn);
  if(e.code==='KeyQ')go(st-1);if(e.code==='KeyR')go(st+1);
- const n='12345678'.indexOf(e.key);if(n>=0)go(n);if(e.key==='9')go(5);if(e.key==='0')go(9);
+ const dest={1:'r1',2:'r2',3:'r3',4:'r4',5:'r5',6:'r6',7:'r7',8:'r8',9:'solar',0:'ext'}[e.key];if(dest)go(STATIONS.findIndex(s=>s[0]===dest));
  if(e.code.startsWith('Arrow')||e.code==='Space'||e.code==='Tab')e.preventDefault()});
 addEventListener('keyup',e=>keys.delete(e.code));
 addEventListener('blur',()=>keys.clear());
@@ -463,7 +475,8 @@ function start(){playing=true;$('menu').classList.add('off');helpText()}
 function pause(){playing=false;setMap(false);$('menu').classList.remove('off');$('go').textContent='Continuar recorrido'}
 $('go').onclick=()=>{start();cv.requestPointerLock&&cv.requestPointerLock()};
 cv.addEventListener('click',()=>{if(playing&&document.pointerLockElement!==cv)cv.requestPointerLock()});
-document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement!==cv&&playing&&!padOn)pause()});
+document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement!==cv&&playing)pause()});
+addEventListener('wheel',e=>{if(cardOn)$('card').scrollTop+=e.deltaY},{passive:true});
 
 let prev=[];
 const dz=v=>Math.abs(v)<.15?0:(v-Math.sign(v)*.15)/.85;
@@ -483,6 +496,8 @@ function pad(dt){const p=getPad();if(!p)return{f:0,s:0,run:false};
   out.run=(p.buttons[7]&&p.buttons[7].value>.4)||b(10);
   if(edge(0))setCard(!cardOn);if(edge(1)){setCard(false);setMap(false)}
   if(edge(3))setMap(!mapOn);if(edge(4)||edge(14))go(st-1);if(edge(5)||edge(15))go(st+1);
+  if(edge(2)){expOn=!expOn;if(cardOn)renderCard()}
+  if(cardOn&&(b(12)||b(13)))$('card').scrollTop+=(b(13)?1:-1)*500*dt;
   if(edge(9)){document.exitPointerLock&&document.exitPointerLock();pause()}}
  prev=p.buttons.map(x=>x.pressed);return out}
 
@@ -497,7 +512,7 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),.05
   const l=Math.hypot(f,s);if(l>1){f/=l;s/=l}
   mv=move(f,s,keys.has('ShiftLeft')||keys.has('ShiftRight')||gp.run,dt)}
  flow(dt);animar(performance.now()/1000,dt);hud();
- cam.position.set(P.x,1.65+Math.sin(P.bob)*.035*mv,P.z);cam.rotation.set(P.pitch,P.yaw,0);
+ cam.position.set(P.x,1.65+(RM?0:Math.sin(P.bob)*.035*mv),P.z);cam.rotation.set(P.pitch,P.yaw,0);
  rnd.render(S,cam);drawMap($('mini'),false);if(mapOn)drawMap($('big'),true)}
 
 // logo: el mango en láminas de la portada + nombre de la empresa
