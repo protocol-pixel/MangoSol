@@ -15,7 +15,9 @@ Calidad del Hotel Río Blanco: reveal.js, con gráficos animados en `anim/`.
 
 ## Cómo verla
 
-Las animaciones en `anim/` se cargan como iframes, y algunos navegadores bloquean eso si el archivo se abre
+**En línea:** https://protocol-pixel.github.io/MangoSol/ (GitHub Pages, rama `main`, carpeta raíz).
+
+**En tu computadora:** las animaciones en `anim/` se cargan como iframes, y algunos navegadores bloquean eso si el archivo se abre
 con doble clic. Lo más seguro es levantar un servidor local desde esta carpeta:
 
 ```powershell
