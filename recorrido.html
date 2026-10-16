@@ -83,6 +83,9 @@ const INFO={
   f:[['Fruta','≈ 35 km (Tambogrande, valle de San Lorenzo)'],['Puerto de Paita','≈ 60 km'],['Puntaje','Sullana 4.20 · Tambogrande 3.85 · Piura-Castilla 3.75']],
   c:'Sullana = 0.30×4 + 0.20×5 + 0.20×4 + 0.15×4 + 0.15×4 = 4.20',
   p:'Sullana no es la mejor en ningún factor, pero es buena en todos: eso es lo que premia el método de factores ponderados.'},
+ ing:{t:'Ing. Jimmy Nicola',z:'Ingeniero de planta',d:'—',r:'¡Bienvenido a Sol de Tambogrande S.A.C.! Soy el ingeniero de planta. El mango entra por esta puerta y recorre la U sobre las fajas hasta salir en contenedor hacia Paita.',
+  f:[['Ruta sugerida','Sigue la faja: 1 Recepción → 5 Túnel → 8 Despacho, y luego los servicios'],['Turno','10 operarios de campaña por turno, 2 turnos de 8 h'],['Mi tarea','Que salgan 998 kg de producto al día sin pasar los límites de los dos PCC']],
+  c:'9,000 kg de fruta → 998 kg de producto = 9.0 : 1',p:'En cada área abre su ficha para ver de dónde sale cada número.'},
  r1:{t:'Recepción y pesado',z:'Zona sucia · área 1',d:'Operación combinada: operación + inspección',r:'Llega el mango Kent en jabas; se pesa y se registra el lote y el proveedor para la trazabilidad.',
   f:[['Entra','9,000 kg/día de mango fresco'],['Equipo','Balanza de plataforma de 1,000 kg'],['Campaña','156 días: noviembre a abril'],['Año 1','≈ 1,051 t de fruta = 0.2 % de lo que produce Piura']],
   c:'116.6 t × 9.0 = 1,051 t · 1,051 ÷ 535,407 = 0.2 %',
@@ -201,12 +204,30 @@ function crates(x0,z0,nx,nz,lv){const cw=.55,cd=.4,ch=.3;
  COL.push([x0,x0+nx*cw,z0,z0+nz*cd])}
 function table(cx,cz,w,d,h=.9,top=INOX){B(cx,cz,w,d,.05,top,h-.05,false);
  for(const sx of[-1,1])for(const sz of[-1,1])B(cx+sx*(w/2-.06),cz+sz*(d/2-.06),.05,.05,h-.05,INOX,0,false);COL.push([cx-w/2,cx+w/2,cz-d/2,cz+d/2])}
-function worker(x,z,ry=0){const g=new THREE.Group();
- const add=(geo,c,y)=>{const me=new THREE.Mesh(geo,mat(c));me.position.y=y;g.add(me)};
- add(bgeo(.34,.8,.22),0x34495E,.4);add(new THREE.CylinderGeometry(.2,.22,.7,12),0xF4F4F0,1.15);
- add(new THREE.SphereGeometry(.13,14,10),0xB98058,1.63);add(new THREE.CylinderGeometry(.14,.14,.09,14),0xFFFFFF,1.74);
- add(bgeo(.3,.18,.04),0x8FB7C9,1.58);g.children[4].position.z=-.12;
- g.position.set(x,0,z);g.rotation.y=ry;S.add(g);COL.push([x-.25,x+.25,z-.25,z+.25])}
+// personas con brazos y piernas articulados (pivote en hombro y cadera) para animarlas
+const NPC=[];
+function persona(x,z,ry,tipo,o={}){const g=new THREE.Group(),cu=new THREE.Group();g.add(cu);
+ const put=(p,geo,c,x0,y0,z0)=>{const me=new THREE.Mesh(geo,mat(c));me.position.set(x0,y0,z0);p.add(me);return me};
+ const ropa=o.ropa||0xF4F4F0,piel=0xB98058;
+ const piernas=[-1,1].map(sd=>{const pv=new THREE.Group();pv.position.set(sd*.1,.8,0);put(pv,bgeo(.14,.8,.18),o.pant||0x34495E,0,-.4,0);g.add(pv);return pv});
+ put(cu,new THREE.CylinderGeometry(.2,.22,.7,12),ropa,0,1.15,0);
+ if(o.chaleco)put(cu,new THREE.CylinderGeometry(.212,.232,.46,12),o.chaleco,0,1.2,0);
+ put(cu,new THREE.SphereGeometry(.13,14,10),piel,0,1.63,0);
+ if(o.casco)put(cu,new THREE.SphereGeometry(.16,16,8,0,Math.PI*2,0,Math.PI/2),o.casco,0,1.66,0);
+ else{put(cu,new THREE.CylinderGeometry(.14,.14,.09,14),0xFFFFFF,0,1.74,0);put(cu,bgeo(.26,.12,.04),0x8FB7C9,0,1.57,-.12)}
+ const brazos=[-1,1].map(sd=>{const pv=new THREE.Group();pv.position.set(sd*.27,1.42,0);put(pv,bgeo(.1,.58,.1),ropa,0,-.29,0);put(pv,new THREE.SphereGeometry(.06,8,6),piel,0,-.62,0);cu.add(pv);return pv});
+ if(o.tablero)put(brazos[0],bgeo(.24,.3,.02),0x8B6B43,0,-.55,-.1);
+ if(o.carga){g.add(o.carga);o.carga.position.copy(o.cargaPos)}
+ g.position.set(x,0,z);g.rotation.y=ry;S.add(g);
+ if(!o.ruta)COL.push([x-.25,x+.25,z-.25,z+.25]);
+ const n=Object.assign({g,cu,brazos,piernas,tipo,ph:Math.random()*10,x,z},o);NPC.push(n);return n}
+function jaba(){const g=new THREE.Group(),a=new THREE.Mesh(bgeo(.51,.28,.36),mat(VERDE)),b=new THREE.Mesh(bgeo(.45,.05,.3),mat(MANGO));b.position.y=.15;g.add(a,b);return g}
+function carro(){const g=new THREE.Group(),m=(geo,c,x,y,z)=>{const me=new THREE.Mesh(geo,mat(c));me.position.set(x,y,z);g.add(me)};
+ for(const sx of[-1,1])for(const sz of[-1,1])m(bgeo(.04,1.9,.04),INOX,sx*.42,.95,sz*.62);
+ for(let k=0;k<12;k++){m(bgeo(.84,.02,1.24),INOX,0,.21+k*.14,0);m(bgeo(.74,.015,1.1),0xF4A020,0,.233+k*.14,0)}return g}
+function transpaleta(){const g=new THREE.Group(),m=(geo,c,x,y,z)=>{const me=new THREE.Mesh(geo,mat(c));me.position.set(x,y,z);g.add(me)};
+ m(bgeo(.6,.1,1.3),0xD9A21E,0,.06,0);m(bgeo(.06,1.0,.06),0xD9A21E,0,.6,.62);m(bgeo(1.1,.12,1.0),0x8B6B43,0,.17,0);
+ for(let k=0;k<3;k++)m(bgeo(1.05,.28,.95),k%2?0xC09460:CARTON,0,.38+k*.29,0);return g}
 function cart(cx,cz){for(const sx of[-1,1])for(const sz of[-1,1])B(cx+sx*.42,cz+sz*.62,.04,.04,1.9,INOX,0,false);
  for(let k=0;k<12;k++){B(cx,cz,.84,1.24,.02,INOX,.2+k*.14,false);B(cx,cz,.74,1.1,.015,0xD9822B,.225+k*.14,false)}
  COL.push([cx-.45,cx+.45,cz-.65,cz+.65])}
@@ -238,24 +259,23 @@ for(const [z0,x0,x1] of[[.4,7.6,14.4],[2.7,9,13]]){B((x0+x1)/2,z0+.5,x1-x0,1,.04
 B(11,.35,2.2,.5,.6,0xF7F7F7,3.1,false);
 const frio=new THREE.PointLight(0x9FD8FF,.7,10);frio.position.set(11,3.5,4);S.add(frio);
 // 3 selección y lavado
-table(16.6,2.2,1.0,2.4);worker(17.6,1.6,-Math.PI/2);worker(17.6,2.8,-Math.PI/2);
+table(16.6,2.2,1.0,2.4);
 B(20.4,1.7,3.8,1.6,1.0,INOX);B(20.4,1.7,3.6,1.4,.02,new THREE.MeshLambertMaterial({color:0x5DB4D8}),.97,false);
 for(const x of[19.2,20.4,21.6])box(x-.03,x+.03,.9,2.5,1.6,1.66,INOX,false);
 B(17.2,7.3,.6,.6,.7,0xC0392B);
 // 4 pelado, laminado y pretratamiento
 table(24.6,1.5,2.4,1.0);table(27.3,1.5,2.4,1.0);
-worker(24.1,2.4,Math.PI);worker(25.2,2.4,Math.PI);worker(26.8,2.4,Math.PI);worker(27.9,2.4,Math.PI);
+for(const [x,c] of[[23.8,MANGO],[24.4,0xF4A020],[25.0,0xF4A020],[25.6,MANGO],[26.6,0xF4A020],[27.4,MANGO],[28.0,0xF4A020]])B(x,1.35,.2,.12,.03,c,.9,false);
 for(const z of[1.2,3.0]){B(31.8,z,.8,.8,1.2,INOX);B(31.8,z,.5,.5,.12,0xF0A030,1.2,false)}
 for(const x of[25,27]){cyl(x,4.1,.55,.9,INOX);cyl(x,4.1,.5,.02,0xF2E2A0,.9,false)}
 B(30,4.3,.8,.8,.75,0x2F6B3A);B(30,4.3,.7,.7,.04,0x7A8F3A,.75,false);
 // 5 túnel de secado
 box(34.6,34.8,1,12.8,0,2.8,0x5D6A70,false);box(39.2,39.4,1,12.8,0,2.8,0x5D6A70,false);box(34.6,39.4,1,12.8,2.6,2.8,0x5D6A70,false);
 box(34.6,39.4,1,1.2,0,2.8,0x5D6A70,false);COL.push([34.6,39.4,1,12.8]);
-for(let z=11.8;z>2;z-=1.5)for(const x of[35.9,38.1])cart(x,z);
+for(let z=11.8;z>2;z-=1.5)for(const x of[35.9,38.1])if(!(x>38&&z>11))cart(x,z);
 const calor=new THREE.PointLight(0xFF9A40,1.1,9);calor.position.set(37,2.2,8);S.add(calor);
 B(37,2.2,4.0,1.8,.8,0x9A3B2A,2.8,false);cyl(37,7,.25,8,0x8E989D,-.65,false,false).rotation.x=Math.PI/2;
 B(34.4,10,.4,1,1.8,0x26332C);B(34.2,10,.02,.6,.4,new THREE.MeshBasicMaterial({color:0xF0A030}),1.2,false);
-cart(38.6,13.6);
 // secador solar (exterior)
 const PLAS=new THREE.MeshLambertMaterial({color:0xF4F8F8,transparent:true,opacity:.35,side:THREE.DoubleSide});
 box(41.5,51.5,1.9,2.1,0,2.4,PLAS);box(41.4,41.6,2,12,0,2.4,PLAS);box(51.4,51.6,2,12,0,2.4,PLAS);
@@ -264,23 +284,23 @@ for(const s of[-1,1]){const p=new THREE.Mesh(new THREE.PlaneGeometry(10,5.5),PLA
 for(const z of[4.5,8.5]){table(46.5,z,7,1.2,.9,0x9AA4A9);B(46.5,z,6.8,1.1,.02,0xE58E2F,.9,false)}
 // 6 enfriado, acondicionado y selección final
 cart(24.5,9.2);cart(26.5,9.2);cart(28.5,9.2);
-table(26,11.3,2.4,1.0);worker(25.4,12.2,Math.PI);worker(26.6,12.2,Math.PI);
+table(26,11.3,2.4,1.0);
 B(30.7,13.98,.6,.12,1.5,0xC9CFD3);B(30.7,14.82,.6,.12,1.5,0xC9CFD3);B(30.7,14.4,.6,.96,.4,0xC9CFD3,1.1,false);B(30.7,14.4,.62,.98,.12,0xC0392B,1.38,false);
 // 7 envasado
 table(16,9.6,2.4,1.0);B(16.3,9.6,.5,.5,.12,0x26332C,.9,false);
 B(20.1,13.98,1.0,.12,1.5,INOX);B(20.1,14.82,1.0,.12,1.5,INOX);B(20.1,14.4,1.0,.96,.45,INOX,1.1,false);B(20.1,14.4,1.02,.98,.06,0x2B5F8A,1.3,false);
-worker(16,10.6,Math.PI);worker(20.1,13.2,0);
+
 pallet(14,9.2,3);B(19.5,15.6,1.8,.7,.01,new THREE.MeshLambertMaterial({color:0x5DB4D8}),.01,false);
 // 8 almacén de producto terminado
 for(const x of[1.2,2.7,4.2,5.7,7.2,8.7,10.2,11.7])pallet(x,8.8,4);
 for(const x of[5.5,7,8.5,10])pallet(x,10.6,3);
-B(9.5,12.6,.6,1.4,.12,0xD9A21E,.05,false);B(9.5,13.4,.6,.15,1.0,0xD9A21E,0,false);
+
 // oficinas
 for(const z of[18.2,20.8,23.4]){table(1,z,.8,1.4,.75,0xA88B64);B(1.1,z,.08,.5,.32,0x1B1B1B,.75,false);B(1.95,z,.45,.45,.45,0x2B3A33,0,false)}
 table(6.8,22.8,1.8,1.0,.75,0xA88B64);
 // laboratorio
 B(12.5,24.25,6,.8,.9,0xF4F4F0);for(const [x,c] of[[10.2,0x2B3A33],[11.4,0xDADADA],[12.8,0x2B5F8A],[14.3,0x2B3A33]])B(x,24.2,.5,.4,.3,c,.9,false);
-B(9.95,16.7,.7,.7,1.8,0xF7F7F7);worker(12,23.2,0);
+B(9.95,16.7,.7,.7,1.8,0xF7F7F7);
 // vestuarios
 B(20,24.65,7,.45,1.9,0x6C8AA0);for(let x=16.75;x<23.5;x+=.5)box(x-.005,x+.005,24.42,24.43,.1,1.8,0x4A6578,false);
 B(23.6,17.7,.6,1.8,.9,0xF7F7F7);B(20,21.5,3,.4,.45,0xA88B64);
@@ -290,6 +310,34 @@ B(26,18,2,1,1.3,0x2F5D3A);B(25.5,24.35,2,.7,.9,0x7A6A55);
 // residuos
 for(const x of[34,36.5,39]){B(x,17.1,2,1.4,1.2,0x2F6B3A);B(x,17.1,1.9,1.3,.04,0x9A7A2E,1.2,false)}
 const pila=new THREE.Mesh(new THREE.ConeGeometry(1.3,1,18),mat(0x8A6A2E));pila.position.set(34.5,.5,22.5);S.add(pila);COL.push([33.4,35.6,21.4,23.6]);
+
+// ---------- Personal de un turno: cada uno trabaja en su estación ----------
+const V3=(x,y,z)=>new THREE.Vector3(x,y,z),PI=Math.PI;
+persona(5.3,1.9,0,'ruta',{ruta:[[5.3,1.9],[4.25,5.4]],vel:.9,pausa:1.6,carga:jaba(),cargaPos:V3(0,1.0,-.4),ida:true}); // recepción: lleva jabas a la faja
+persona(16.4,7.35,0,'faja');                                  // selección: retira la fruta dañada al descarte
+persona(24.0,2.35,0,'cortar');persona(25.2,2.35,0,'cortar');persona(27.3,2.35,0,'cortar'); // pelado manual
+persona(38.6,15.3,0,'ruta',{ruta:[[38.6,15.3],[38.6,14.0]],vel:.45,pausa:3,empuja:true,carga:carro(),cargaPos:V3(0,0,-1.15)}); // túnel: mete y saca carros
+persona(29.6,13.6,PI,'faja');                                 // selección final junto al detector de metales
+persona(19.0,13.6,PI,'faja');                                 // envasado a la salida de la selladora
+persona(11.2,12.95,0,'ruta',{ruta:[[11.2,12.95],[6.9,12.95]],vel:.8,pausa:2,carga:transpaleta(),cargaPos:V3(0,0,-1.0)}); // almacenero
+persona(12,23.2,PI,'lab');                                    // analista de laboratorio
+const ING={x:1.3,z:-1.4};
+persona(ING.x,ING.z,0,'saludo',{ropa:0x2B5F8A,pant:0x2B2F33,casco:0xFFFFFF,chaleco:0xF0A030,tablero:true});
+function animar(t,dt){for(const n of NPC){const [bi,bd]=n.brazos,[pi,pd]=n.piernas,w=t+n.ph;
+ pi.rotation.x=pd.rotation.x=0;n.cu.rotation.set(0,0,0);bi.rotation.set(0,0,0);bd.rotation.set(0,0,0);
+ if(n.tipo==='cortar'){n.cu.rotation.x=.12;bd.rotation.x=.95+Math.sin(w*7)*.35;bi.rotation.x=.8+Math.sin(w*3.5)*.08}
+ else if(n.tipo==='faja'){const s=(w*.6)%1,r=s<.4?Math.sin(s/.4*PI):0;n.cu.rotation.y=Math.sin(w*.5)*.3;n.cu.rotation.x=r*.15;bd.rotation.x=.35+r*1.0;bi.rotation.x=.45}
+ else if(n.tipo==='lab'){n.cu.rotation.x=.1;bd.rotation.x=.85+Math.sin(w*2.2)*.25;bi.rotation.x=.7}
+ else if(n.tipo==='ruta'){const [[ax,az],[bx,bz]]=n.ruta,tm=Math.hypot(bx-ax,bz-az)/n.vel,pa=n.pausa,u=w%(2*(tm+pa));
+  let f=0,mov=0,dir=1;if(u<tm){f=u/tm;mov=1}else if(u<tm+pa)f=1;else if(u<2*tm+pa){f=1-(u-tm-pa)/tm;mov=1;dir=-1}
+  n.g.position.set(ax+(bx-ax)*f,0,az+(bz-az)*f);
+  if(mov&&!n.empuja)n.g.rotation.y=Math.atan2(-(bx-ax)*dir,-(bz-az)*dir);
+  if(n.ida)n.carga.visible=u<tm+pa*.5||u>2*tm+pa*1.5;
+  const sw=mov?Math.sin(w*8)*.5:0;pi.rotation.x=sw;pd.rotation.x=-sw;
+  if(n.empuja||n.carga.visible){bi.rotation.x=bd.rotation.x=n.empuja?1.25:.95}else{bi.rotation.x=-sw*.6;bd.rotation.x=sw*.6}
+  if(!mov){n.cu.rotation.x=.2;bi.rotation.x+=.2;bd.rotation.x+=.2}}
+ else if(n.tipo==='saludo'){bi.rotation.x=.9;const dx=P.x-n.x,dz=P.z-n.z;
+  if(Math.hypot(dx,dz)<8){const a=Math.atan2(-dx,-dz),d=((a-n.g.rotation.y+PI*3)%(PI*2))-PI;n.g.rotation.y+=d*Math.min(1,dt*4);bd.rotation.z=2.5+Math.sin(w*9)*.35}}}}
 
 // ---------- Letreros ----------
 function label(txt,sub,x,y,z,w,fg,bg){const c=document.createElement('canvas');c.width=1024;c.height=sub?260:170;const g=c.getContext('2d');
@@ -368,17 +416,20 @@ let st=9;
 const $=id=>document.getElementById(id);
 let cur='',cardOn=false,mapOn=false,playing=false,padOn=false;
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove('on'),1600)}
-function renderCard(){const d=INFO[cur];$('card').innerHTML=`<span class="chip mono" style="color:#F0A030;font-size:12px;letter-spacing:1.5px;text-transform:uppercase">${d.z}</span>
+let cerca=false;
+function renderCard(){const d=INFO[cerca?'ing':cur];$('card').innerHTML=`<span class="chip mono" style="color:#F0A030;font-size:12px;letter-spacing:1.5px;text-transform:uppercase">${d.z}</span>
  <h2>${d.t}</h2><div class="dop">DOP: ${d.d}</div><p>${d.r}</p><table>${d.f.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table>
  ${d.c?`<div class="calc">${d.c}</div>`:''}<div class="tip"><b>Para la exposición:</b> ${d.p}</div><div class="cerrar">${padOn?'A / ✕ o B / ○':'E'} para cerrar</div>`}
 function setCard(v){cardOn=v;$('card').classList.toggle('on',v);if(v)renderCard()}
 function setMap(v){mapOn=v;$('mapa').classList.toggle('on',v)}
-function hud(){const id=roomAt(P.x,P.z);if(id===cur)return;cur=id;const d=INFO[id];
+function hud(){const c=Math.hypot(P.x-ING.x,P.z-ING.z)<3;if(c!==cerca){cerca=c;hint();if(cardOn)renderCard()}
+ const id=roomAt(P.x,P.z);if(id===cur)return;cur=id;const d=INFO[id];
  $('aZona').textContent=d.z;$('aNom').textContent=d.t;if(cardOn)renderCard();
  if(id==='r5'||id==='r6')rumble()}
 function helpText(){$('help').textContent=padOn?'Stick izq. moverse · Stick der. mirar · RT correr · A ficha · Y mapa · LB/RB otra área · Start pausa'
  :'WASD moverse · Mouse mirar · Shift correr · E ficha · M mapa · 1–8 áreas · Q/R anterior/siguiente · Esc pausa';
- $('aHint').textContent=padOn?'Botón A / ✕: ver la ficha del área':'Tecla E: ver la ficha del área'}
+ hint()}
+function hint(){$('aHint').textContent=(padOn?'Botón A / ✕':'Tecla E')+(cerca?': hablar con el Ing. Jimmy Nicola':': ver la ficha del área')}
 
 // mapa: mismo dibujo para el mini y el grande
 const WB={x0:-14,x1:56,z0:-16,z1:32};
@@ -445,10 +496,19 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),.05
   let f=k('KeyW')+k('ArrowUp')-k('KeyS')-k('ArrowDown')+gp.f,s=k('KeyD')+k('ArrowRight')-k('KeyA')-k('ArrowLeft')+gp.s;
   const l=Math.hypot(f,s);if(l>1){f/=l;s/=l}
   mv=move(f,s,keys.has('ShiftLeft')||keys.has('ShiftRight')||gp.run,dt)}
- flow(dt);hud();
+ flow(dt);animar(performance.now()/1000,dt);hud();
  cam.position.set(P.x,1.65+Math.sin(P.bob)*.035*mv,P.z);cam.rotation.set(P.pitch,P.yaw,0);
  rnd.render(S,cam);drawMap($('mini'),false);if(mapOn)drawMap($('big'),true)}
 
+// logo: el mango en láminas de la portada + nombre de la empresa
+function logo(fg){const c=document.createElement('canvas');c.width=1400;c.height=400;const g=c.getContext('2d');
+ g.save();g.translate(200,200);g.rotate(-14*PI/180);g.beginPath();g.ellipse(0,0,125,148,0,0,PI*2);g.clip();
+ const gr=g.createRadialGradient(-45,-55,10,0,0,190);gr.addColorStop(0,'#FFC768');gr.addColorStop(.45,'#F0A030');gr.addColorStop(.85,'#C9650C');gr.addColorStop(1,'#9A4508');g.fillStyle=gr;
+ [0,6,-4,8,-3,5,-7,3,-5,7,0].forEach((d,i)=>g.fillRect(-170+d,-152+i*28,340,21));g.restore();
+ g.fillStyle=fg;g.font="800 168px 'Bricolage Grotesque','IBM Plex Sans',Arial";g.fillText('MangoSol',370,215);
+ g.font="600 60px 'IBM Plex Sans',Arial";g.fillText('Sol de Tambogrande S.A.C.',378,310);
+ const tx=new THREE.CanvasTexture(c);tx.anisotropy=8;return tx}
+function calco(tx,x,y,z,ry,w){const p=new THREE.Mesh(new THREE.PlaneGeometry(w,w*400/1400),new THREE.MeshBasicMaterial({map:tx,transparent:true}));p.position.set(x,y,z);p.rotation.y=ry;S.add(p)}
 // letreros después de cargar las fuentes (si no hay internet, usan Arial)
 Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]).then(()=>{
  for(const r of ROOMS)label(SHORT[r.id],(r.num?r.num+' · ':'')+ZTXT[r.zona],(r.x0+r.x1)/2,3.5,r.id==='r5'?14.4:(r.z0+r.z1)/2,r.x1-r.x0<8?3.6:4.4);
@@ -459,7 +519,11 @@ Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]).then(()=
  label('Sol de Tambogrande S.A.C.','MANGOSOL',5,3.2,-16.6,5);
  label('Descarte 7 %',null,17.2,1.2,7.3,1.4,'#F3EDE2','rgba(192,57,43,.95)');
  label('Contenedor 20\' a Paita',null,-5.6,4.1,12,3.6);
- label('Mango fresco · 9,000 kg/día',null,7.4,3.3,-7.2,3.6);
+ label('Mango fresco · 9,000 kg/día',null,7.4,3.6,-7.2,3.6);
+ label('ING. JIMMY NICOLA','INGENIERO DE PLANTA',ING.x,2.35,ING.z,2.2);
+ const oscuro=logo('#13201A'),claro=logo('#F3EDE2');
+ calco(oscuro,6.185,1.75,-7.2,-PI/2,6.2);calco(oscuro,8.615,1.75,-7.2,PI/2,6.2);calco(oscuro,7.4,2.0,-3.585,0,2.2);
+ calco(claro,-5.6,2.25,10.765,PI,5.4);calco(claro,-5.6,2.25,13.235,0,5.4);calco(claro,-2.535,2.4,12,PI/2,2.3);
 });
 helpText();loop();
 </script>
