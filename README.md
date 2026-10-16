@@ -1,8 +1,10 @@
 # MangoSol · Presentación del avance de prefactibilidad
 
 Presentación del avance (secciones I–IV) del curso **Formulación y Evaluación de Proyectos**
-(Ingeniería Industrial, UPAO, 2026-20). Sigue el mismo esquema que la presentación de Gestión de la
-Calidad del Hotel Río Blanco: reveal.js, con gráficos animados en `anim/`.
+(Ingeniería Industrial, UPAO, 2026-20), hecha con reveal.js y gráficos animados en `anim/`.
+
+Este repositorio contiene **solo la presentación**. El informe en Word, el modelo de cálculo y los
+demás entregables del estudio no están publicados aquí.
 
 ## Contenido
 
@@ -35,5 +37,14 @@ y abrir `http://localhost:8765`.
   para que se dibujen desde cero.
 - **Embudo → brecha:** reveal.js *auto-animate* mueve la cifra «116.6 t» de una diapositiva a la otra.
 
-Las cifras vienen de `../generador/datos.py`, pero se copiaron a mano: si cambia el modelo, hay que
-actualizarlas aquí.
+## De dónde salen las cifras
+
+- **Datos reales del sector:** exportaciones peruanas de mango deshidratado y sus destinos
+  ([CIEN-ADEX, 2025](https://cien.adexperu.org.pe/wp-content/uploads/2025/01/NC_Mango_Ene2025_vf.pdf))
+  y producción de mango de Piura en 2025 (Dirección Regional de Agricultura de Piura, vía
+  [Agraria.pe](https://agraria.pe/noticias/produccion-de-mango-en-piura-crecio-55-81-en-2025-41552)).
+- **Datos simulados con fines académicos:** encuesta a importadores, precios de los competidores y
+  parámetros del proceso.
+- Los resultados (embudo de mercado, balance de materia, matrices, capacidad) se calcularon en un modelo
+  aparte que no forma parte de este repositorio, y **se copiaron a mano** en `index.html`. Si el modelo
+  cambia, hay que actualizar las cifras aquí.
