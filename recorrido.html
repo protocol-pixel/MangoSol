@@ -1,0 +1,445 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Planta MangoSol 3D</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<style>
+/* Recorrido 3D de la planta: misma distribución en U del informe (1 unidad = 1 m) */
+:root{--osc:#13201A;--pan:rgba(19,32,26,.9);--nar:#F0A030;--cre:#F3EDE2;--gri:#8C978F;--lin:#2E4237}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--osc);font-family:'IBM Plex Sans',Arial,sans-serif;color:var(--cre)}
+canvas#c{display:block;width:100%;height:100%}
+.mono{font-family:'IBM Plex Mono',Consolas,monospace}
+#area{position:fixed;left:24px;top:20px;max-width:46vw;pointer-events:none}
+#area .chip{display:inline-block;font:500 13px 'IBM Plex Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:4px;background:var(--pan);color:var(--nar)}
+#area h1{margin:8px 0 4px;font:800 34px/1.1 'Bricolage Grotesque',Georgia,sans-serif;text-shadow:0 2px 12px rgba(0,0,0,.55)}
+#area p{margin:0;font:500 14px 'IBM Plex Mono',monospace;color:var(--cre);text-shadow:0 1px 6px rgba(0,0,0,.8)}
+#mini{position:fixed;right:20px;top:20px;width:280px;height:192px;border-radius:6px;background:var(--pan);border:1px solid var(--lin)}
+#cross{position:fixed;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:rgba(243,237,226,.75);pointer-events:none}
+#help{position:fixed;left:24px;bottom:18px;font:500 13px 'IBM Plex Mono',monospace;color:var(--cre);background:var(--pan);padding:8px 12px;border-radius:6px;max-width:calc(100vw - 48px)}
+#card{position:fixed;right:20px;top:228px;bottom:20px;width:400px;overflow:auto;background:var(--pan);border:1px solid var(--lin);border-left:4px solid var(--nar);border-radius:6px;padding:20px 22px;display:none}
+#card.on{display:block}
+#card h2{margin:6px 0 6px;font:800 26px/1.15 'Bricolage Grotesque',Georgia,sans-serif}
+#card .dop{font:500 13px 'IBM Plex Mono',monospace;color:var(--gri);margin-bottom:10px}
+#card p{margin:0 0 12px;font-size:15px;line-height:1.45}
+#card table{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:12px}
+#card td{padding:6px 4px;border-top:1px solid var(--lin);vertical-align:top}
+#card td:first-child{color:var(--gri);width:40%}
+#card .calc{font:500 13px/1.5 'IBM Plex Mono',monospace;color:var(--osc);background:var(--nar);padding:10px 12px;border-radius:4px;margin-bottom:12px}
+#card .tip{font-size:14px;line-height:1.45;color:#D8E0D9;border-left:2px solid var(--gri);padding-left:10px}
+#card .cerrar{font:500 12px 'IBM Plex Mono',monospace;color:var(--gri);margin-top:14px}
+#toast{position:fixed;left:50%;top:20px;transform:translateX(-50%);background:var(--nar);color:var(--osc);font-weight:600;padding:8px 16px;border-radius:6px;opacity:0;transition:opacity .25s;pointer-events:none}
+#toast.on{opacity:1}
+#mapa{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(19,32,26,.82)}
+#mapa.on{display:flex}
+#mapa canvas{width:min(92vw,1100px);aspect-ratio:70/48;border-radius:8px;border:1px solid var(--lin);background:var(--osc)}
+#menu{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(19,32,26,.9)}
+#menu.off{display:none}
+#menu .box{width:min(860px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;padding:32px}
+#menu .k{font:500 14px 'IBM Plex Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:var(--nar)}
+#menu h1{margin:8px 0 10px;font:800 46px/1.05 'Bricolage Grotesque',Georgia,sans-serif}
+#menu p{font-size:17px;line-height:1.5;color:#D8E0D9;margin:0 0 20px}
+#menu .cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:22px}
+#menu .col{background:#1C2B23;border:1px solid var(--lin);border-radius:6px;padding:14px 16px}
+#menu .col h3{margin:0 0 8px;font-size:16px}
+#menu .col div{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:4px 0;border-top:1px solid var(--lin)}
+#menu .col b{font:500 13px 'IBM Plex Mono',monospace;color:var(--nar);white-space:nowrap}
+#menu button{font:700 20px 'IBM Plex Sans',Arial,sans-serif;background:var(--nar);color:var(--osc);border:0;border-radius:6px;padding:14px 26px;cursor:pointer}
+#menu a{color:var(--cre);margin-left:18px;font-size:16px}
+#pad{font:500 14px 'IBM Plex Mono',monospace;color:var(--gri);margin-top:16px}
+#pad.ok{color:var(--nar)}
+@media (max-width:700px){#menu .cols{grid-template-columns:1fr}#mini{width:180px;height:124px}#card{width:auto;left:20px;top:auto;height:50vh}}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="cross"></div>
+<div id="area"><span class="chip" id="aZona">Exterior</span><h1 id="aNom">Terreno en Sullana</h1><p id="aHint">E · botón A: ver la ficha del área</p></div>
+<canvas id="mini" width="560" height="384"></canvas>
+<div id="card"></div>
+<div id="help" class="mono"></div>
+<div id="toast"></div>
+<div id="mapa"><canvas id="big" width="1400" height="960"></canvas></div>
+<div id="menu"><div class="box">
+ <div class="k">MangoSol · Prefactibilidad 2026</div>
+ <h1>Recorre la planta de mango deshidratado</h1>
+ <p>Es la misma distribución en U del informe (nave de 40 × 25 m en Sullana). Camina por las ocho áreas del proceso y los servicios; en cada una abre su ficha para ver el balance de materia, los puntos críticos de control y de dónde sale cada número.</p>
+ <div class="cols">
+  <div class="col"><h3>Teclado y mouse</h3>
+   <div><span>Moverse</span><b>W A S D / flechas</b></div><div><span>Mirar</span><b>Mouse</b></div>
+   <div><span>Correr</span><b>Shift</b></div><div><span>Ficha del área</span><b>E</b></div>
+   <div><span>Mapa</span><b>M</b></div><div><span>Ir a un área</span><b>1–8 · 9 solar · 0 exterior</b></div>
+   <div><span>Área anterior / siguiente</span><b>Q / R</b></div><div><span>Pausa</span><b>Esc</b></div></div>
+  <div class="col"><h3>Mando (Xbox, PlayStation u otro)</h3>
+   <div><span>Moverse</span><b>Stick izquierdo</b></div><div><span>Mirar</span><b>Stick derecho</b></div>
+   <div><span>Correr</span><b>RT / R2</b></div><div><span>Ficha del área</span><b>A / ✕</b></div>
+   <div><span>Cerrar</span><b>B / ○</b></div><div><span>Mapa</span><b>Y / △</b></div>
+   <div><span>Área anterior / siguiente</span><b>LB / RB · L1 / R1</b></div><div><span>Pausa</span><b>Start / Options</b></div></div>
+ </div>
+ <button id="go">Empezar recorrido</button><a href="index.html#/planta">← Volver a la presentación</a>
+ <div id="pad">Mando: no detectado. Conéctalo y presiona cualquier botón.</div>
+</div></div>
+<script src="lib/three.min.js"></script>
+<script>
+// ---------- Datos de cada área (cifras del informe; balance diario de campaña) ----------
+const INFO={
+ ext:{t:'Terreno en Sullana',z:'Exterior',d:'—',r:'Terreno de ≈ 1,500 m². Sullana ganó la microlocalización con 4.20 puntos.',
+  f:[['Fruta','≈ 35 km (Tambogrande, valle de San Lorenzo)'],['Puerto de Paita','≈ 60 km'],['Puntaje','Sullana 4.20 · Tambogrande 3.85 · Piura-Castilla 3.75']],
+  c:'Sullana = 0.30×4 + 0.20×5 + 0.20×4 + 0.15×4 + 0.15×4 = 4.20',
+  p:'Sullana no es la mejor en ningún factor, pero es buena en todos: eso es lo que premia el método de factores ponderados.'},
+ r1:{t:'Recepción y pesado',z:'Zona sucia · área 1',d:'Operación combinada: operación + inspección',r:'Llega el mango Kent en jabas; se pesa y se registra el lote y el proveedor para la trazabilidad.',
+  f:[['Entra','9,000 kg/día de mango fresco'],['Equipo','Balanza de plataforma de 1,000 kg'],['Campaña','156 días: noviembre a abril'],['Año 1','≈ 1,051 t de fruta = 0.2 % de lo que produce Piura']],
+  c:'116.6 t × 9.0 = 1,051 t · 1,051 ÷ 535,407 = 0.2 %',
+  p:'La fruta no limita el tamaño de la planta: lo limita el mercado.'},
+ r2:{t:'Almacén de materia prima',z:'Zona sucia · área 2',d:'Almacén temporal (no figura en el DOP)',r:'Cámara fría donde la fruta pintona termina de madurar antes de entrar al proceso.',
+  f:[['Temperatura','12 – 14 °C'],['Relación con recepción','A: absolutamente necesaria'],['Función','Pulmón: la planta procesa parejo aunque la fruta llegue a ráfagas']],
+  c:null,p:'Está pegada a la recepción porque la tabla relacional le da una A.'},
+ r3:{t:'Selección y lavado',z:'Zona sucia · área 3',d:'Inspección (selección) + operación (lavado)',r:'Se descarta la fruta podrida o golpeada y se lava por inmersión y aspersión con agua clorada a 100 ppm.',
+  f:[['Entra','9,000 kg'],['Sale','8,370 kg'],['Merma','630 kg de descarte (7 %)'],['Equipo','Lavadora de inmersión y aspersión, 1 t/h']],
+  c:'9,000 × 0.93 = 8,370 kg',p:'Mira la canasta roja: de cada 100 mangos que pasan, unos 7 se van al descarte.'},
+ r4:{t:'Pelado, laminado y pretratamiento',z:'Zona sucia · área 4',d:'Operaciones: pelado y despepado · recorte y pretratamiento',r:'Pelado manual con cuchillos de acero inoxidable, láminas de 6–8 mm y baño de ácido cítrico y ascórbico para que no se oscurezcan.',
+  f:[['Entra','8,370 kg'],['Pulpa (62 %)','5,189 kg · merma 3,181 kg de cáscara y pepa'],['Recorte (−2 %)','5,086 kg · merma 104 kg'],['Equipos','6 mesas inox, 2 rebanadoras, 2 tinas de 500 L']],
+  c:'8,370 × 0.62 = 5,189 kg · 5,189 × 0.98 = 5,086 kg',p:'Es el área con más operarios porque el pelado es manual. La cáscara sale por la puerta norte hacia residuos, sin cruzar la zona limpia.'},
+ r5:{t:'Túnel de secado (GLP)',z:'Secado · área 5 · PCC 1',d:'Operación · punto crítico de control n.° 1',r:'Aire caliente a 60–65 °C durante 8 a 10 horas hasta 16 % de humedad. Separa la zona sucia de la limpia.',
+  f:[['Entra','5,086 kg de láminas (83 % de agua)'],['Sale','1,029 kg (16 % de humedad)'],['Agua evaporada','4,056 kg: 80 % de lo que entra'],['Capacidad','24 carros × 25 bandejas ≈ 2.7 t por carga'],['Ciclos','2 al día: 5,086 ÷ 2 = 2,543 kg → margen de 6 %'],['Límite crítico','Humedad ≤ 18 %; si no, crecen hongos']],
+  c:'Sólidos = 5,086 × 0.17 = 864.6 kg · 864.6 ÷ 0.84 = 1,029 kg',p:'Los sólidos no se evaporan: solo se va el agua. Con esa regla sale todo el balance.'},
+ solar:{t:'Secador solar de presecado',z:'Exterior · secado',d:'Parte de la operación de secado',r:'Invernadero de 100 m² que aprovecha el sol de Sullana para quitar parte del agua antes del túnel.',
+  f:[['Área','100 m²'],['Efecto','≈ 25 % menos GLP'],['GLP año 1','≈ 48 t, ya con el ahorro solar']],
+  c:null,p:'Responde a los factores tecnológico y ecológico del PESTEL: menos combustible y menos huella de carbono.'},
+ r6:{t:'Enfriado y selección final',z:'Zona limpia · área 6 · PCC 2',d:'Espera (24 h) + inspección · punto crítico de control n.° 2',r:'Las láminas reposan 24 h para igualar su humedad; luego se retiran las rotas u oscuras y todo pasa por el detector de metales.',
+  f:[['Entra','1,029 kg'],['Sale','998 kg'],['Merma','31 kg (3 %)'],['Detector de metales','Sensibilidad Fe 1.5 mm']],
+  c:'1,029 × 0.97 = 998 kg · 9,000 ÷ 998 = 9.0 : 1',p:'Por cada kilo de producto se necesitan 9 kilos de mango fresco.'},
+ r7:{t:'Envasado',z:'Zona limpia · área 7',d:'Operación',r:'Bolsa de polietileno grado alimentario dentro de caja de 10 kg, con lote y fecha.',
+  f:[['Entra y sale','998 kg/día'],['Cajas','≈ 100 de 10 kg al día'],['Año 1','11,664 bolsas y cajas (116.6 t)'],['Relación con laboratorio','I: se mide la humedad antes de envasar']],
+  c:'998 ÷ 10 ≈ 100 cajas/día · 116.6 t × 100 = 11,664 cajas',p:'La puerta de vestuarios tiene pediluvio: los operarios entran a la zona limpia por el filtro sanitario.'},
+ r8:{t:'Almacén de producto terminado y despacho',z:'Zona limpia · área 8',d:'Almacenamiento + transporte',r:'Almacén seco y ventilado. El producto sale en contenedor de 20 pies hacia el puerto de Paita.',
+  f:[['Capacidad anual','998 kg × 156 días = 155.7 t'],['Contenedor de 20\'','≈ 10 t ≈ 10 días de producción'],['Año 1','116.6 t ≈ 12 contenedores'],['Vida útil','12 meses: se produce en campaña y se vende todo el año']],
+  c:'116.6 ÷ 155.7 = 75 % de uso en el año 1 (95 % en el año 5)',p:'La planta se dimensionó para el año 5 (estrategia proactiva); por eso el primer año sobra 25 % de capacidad.'},
+ of:{t:'Oficinas',z:'Servicios',d:'—',r:'Administración, ventas y calidad: aquí trabaja parte del personal permanente.',
+  f:[['Permanentes','9 en toda la planta'],['Precio','US$ 8.50/kg FOB'],['Ventas año 1','US$ 991 mil'],['Relación con el proceso','O: ordinaria (supervisión)']],
+  c:'116.6 t × 1,000 kg × US$ 8.50 = US$ 991,440',p:'Estas ventas son la primera línea del flujo de caja del siguiente avance.'},
+ lab:{t:'Laboratorio de calidad',z:'Servicios',d:'—',r:'Control por lote de humedad, actividad de agua, color y microbiología básica; guarda muestras de retención.',
+  f:[['Humedad final','15 – 18 %'],['Actividad de agua','aw < 0.65'],['Equipos','Medidor de humedad y refractómetro'],['Relación con envasado','I: importante']],
+  c:null,p:'El laboratorio verifica el PCC 1: si la humedad pasa de 18 %, el lote vuelve al túnel.'},
+ ves:{t:'Vestuarios y SS. HH.',z:'Servicios',d:'—',r:'Filtro sanitario: los operarios se cambian, se lavan las manos y pasan el pediluvio antes de entrar al proceso.',
+  f:[['Personal de campaña','22: 2 supervisores + 20 operarios'],['Turnos','2 de 8 h, 10 operarios por turno'],['Norma','Ley 29783, Seguridad y Salud en el Trabajo']],
+  c:'9 permanentes + 22 de campaña = 31 personas',p:'Los 22 de campaña solo trabajan de noviembre a abril.'},
+ cal:{t:'Caldero GLP y mantenimiento',z:'Servicios',d:'—',r:'Tanque de GLP que alimenta los quemadores del túnel y taller de mantenimiento.',
+  f:[['Relación con secado','E: especialmente importante'],['Respaldo','Grupo electrógeno de 40 kW'],['Personal','2 técnicos de mantenimiento'],['GLP año 1','≈ 48 t']],
+  c:null,p:'Tiene puerta propia al exterior: el GLP no entra por la zona de proceso.'},
+ res:{t:'Residuos orgánicos',z:'Servicios',d:'—',r:'Cáscara y pepa del pelado: se compostan o se entregan como alimento para ganado.',
+  f:[['Cáscara y pepa','≈ 3.2 t/día en campaña'],['Descarte de selección','630 kg/día'],['Relación con envasado','X: no deseable']],
+  c:'8,370 − 5,189 = 3,181 kg/día',p:'Por la relación X está en la esquina opuesta al envasado y sin puertas hacia el proceso.'}
+};
+
+// ---------- Plano: mismas zonas del informe (x, y del layout; y crece al norte) ----------
+const ROOMS=[];
+function R(id,x,y,w,h,zona,num){ROOMS.push({id,zona,num,x0:x,x1:x+w,z0:25-(y+h),z1:25-y})}
+R('r1',0,17,7,8,'sucia',1);R('r2',7,17,8,8,'sucia',2);R('r3',15,17,8,8,'sucia',3);R('r4',23,17,10,8,'sucia',4);
+R('r5',33,9,7,16,'secado',5);R('r6',23,9,10,8,'limpia',6);R('r7',13,9,10,8,'limpia',7);R('r8',0,9,13,8,'limpia',8);
+R('of',0,0,9,9,'serv');R('lab',9,0,7,9,'serv');R('ves',16,0,8,9,'serv');R('cal',24,0,8,9,'serv');R('res',32,0,8,9,'serv');
+const SOLAR={id:'solar',x0:41.5,x1:51.5,z0:2,z1:12};
+const ZCOL={sucia:0x9FB3A4,limpia:0xDCD3BE,secado:0xBFA27E,serv:0xB4B8B3};
+const ZHEX={sucia:'#6F8A77',limpia:'#CFC3A6',secado:'#D9A766',serv:'#59625C'};
+// puertas internas [centro, ancho] sobre la pared compartida; sin puerta = muro; VENT = muro con ventana (sucia/limpia)
+const DOORS={'r1|r2':[6.2,3],'r2|r3':[6.2,3],'r3|r4':[6.2,3],'r4|r5':[6.2,3],'r5|r6':[14.2,3],'r6|r7':[14.2,3],'r7|r8':[14.2,3],
+ 'of|r8':[4.5,1.8],'lab|of':[20.5,1.4],'lab|r7':[14.5,1.6],'lab|ves':[20.5,1.4],'r7|ves':[19.5,1.8],'cal|ves':[20.5,1.4]};
+const VENT=new Set(['r1|r8','r2|r8','r2|r7','r3|r7','r4|r6']);
+const STATIONS=[['r1',4.5,6.8,.6],['r2',11,6.6,0],['r3',19.5,6.6,0],['r4',29.5,7.2,.45],['r5',35.6,15.6,-.15],['solar',46.5,16,0],
+ ['r6',28,14.6,0],['r7',18,14.2,0],['r8',7,14.2,.3],['ext',3.5,-14,Math.PI],['lab',12.5,18.2,Math.PI],['of',5,18,2.36],
+ ['ves',20,18,Math.PI],['cal',26.5,21.8,-.85],['res',36,22.8,0]];
+
+// ---------- Escena ----------
+const cv=document.getElementById('c');
+const rnd=new THREE.WebGLRenderer({canvas:cv,antialias:true});
+rnd.setPixelRatio(Math.min(devicePixelRatio,1.5));
+const S=new THREE.Scene();S.background=new THREE.Color(0xCFE0EA);S.fog=new THREE.Fog(0xCFE0EA,45,130);
+const cam=new THREE.PerspectiveCamera(70,1,.05,300);cam.rotation.order='YXZ';
+S.add(new THREE.HemisphereLight(0xffffff,0x8a7a5a,.8));S.add(new THREE.AmbientLight(0xffffff,.25));
+const sun=new THREE.DirectionalLight(0xfff4e0,.65);sun.position.set(30,50,20);S.add(sun);
+
+const MATS={},GEOS={},COL=[];
+const mat=(c,o)=>{if(typeof c!=='number')return c;const k=c+(o?JSON.stringify(o):'');return MATS[k]||(MATS[k]=new THREE.MeshLambertMaterial(Object.assign({color:c},o||{})))};
+const bgeo=(w,h,d)=>{const k=[w,h,d].map(v=>v.toFixed(3)).join();return GEOS[k]||(GEOS[k]=new THREE.BoxGeometry(w,h,d))};
+function box(x0,x1,z0,z1,y0,y1,m,col=true){const me=new THREE.Mesh(bgeo(x1-x0,y1-y0,z1-z0),mat(m));me.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);S.add(me);if(col)COL.push([x0,x1,z0,z1]);return me}
+const B=(cx,cz,w,d,h,m,y0=0,col=true)=>box(cx-w/2,cx+w/2,cz-d/2,cz+d/2,y0,y0+h,m,col);
+function cyl(cx,cz,r,h,m,y0=0,col=true,horiz=false,seg=24){const me=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,seg),mat(m));
+ if(horiz){me.rotation.z=Math.PI/2;me.position.set(cx,y0+r,cz);if(col)COL.push([cx-h/2,cx+h/2,cz-r,cz+r])}
+ else{me.position.set(cx,y0+h/2,cz);if(col)COL.push([cx-r,cx+r,cz-r,cz+r])}S.add(me);return me}
+
+// suelo exterior, patio y vía de acceso
+box(-60,100,-50,80,-.1,0,0xCDBB8E,false);
+box(-2,12,-16,0,-.09,.005,0x77787A,false);box(-14,0,9,16,-.09,.005,0x77787A,false);
+box(-60,100,-26,-20,-.09,.006,0x5E5F60,false);
+// pisos por zona y techo
+const H=4.4,T=.2;
+for(const r of ROOMS)box(r.x0,r.x1,r.z0,r.z1,0,.01,r.id==='r2'?0x9DB5BE:ZCOL[r.zona],false);
+const roof=new THREE.Mesh(new THREE.PlaneGeometry(40,25),new THREE.MeshLambertMaterial({color:0xDDE1DE,side:THREE.DoubleSide}));
+roof.rotation.x=Math.PI/2;roof.position.set(20,H,12.5);S.add(roof);
+for(const r of ROOMS)for(let x=r.x0+2;x<r.x1-1;x+=3.5)B(x,(r.z0+r.z1)/2,1.2,.5,.04,new THREE.MeshBasicMaterial({color:0xFFFDF4}),H-.05,false);
+
+// muros: líneas con huecos de puerta; dintel sobre cada puerta
+const WALL=0xEEF0EB,GLASS=new THREE.MeshLambertMaterial({color:0xBFE3F2,transparent:true,opacity:.28});
+function wall(horiz,fix,a,b,gaps,vent){gaps=(gaps||[]).slice().sort((p,q)=>p[0]-q[0]);let cur=a;
+ const seg=(s,e)=>{if(e-s<.01)return;const bx=(y0,y1,m,col)=>horiz?box(s,e,fix-T/2,fix+T/2,y0,y1,m,col):box(fix-T/2,fix+T/2,s,e,y0,y1,m,col);
+  if(vent){bx(0,1.1,WALL,true);bx(1.1,2.4,GLASS,false);bx(2.4,H,WALL,false)}else bx(0,H,WALL,true)};
+ for(const [c,w] of gaps){const s=c-w/2,e=c+w/2;seg(cur,s);
+  horiz?box(s,e,fix-T/2,fix+T/2,2.7,H,WALL,false):box(fix-T/2,fix+T/2,s,e,2.7,H,WALL,false);cur=e}
+ seg(cur,b)}
+const E=1e-6;
+for(let i=0;i<ROOMS.length;i++)for(let j=i+1;j<ROOMS.length;j++){const A=ROOMS[i],C=ROOMS[j],k=[A.id,C.id].sort().join('|');
+ const d=DOORS[k]?[DOORS[k]]:[],v=VENT.has(k);
+ for(const [p,q] of [[A,C],[C,A]]){
+  if(Math.abs(p.x1-q.x0)<E){const lo=Math.max(p.z0,q.z0),hi=Math.min(p.z1,q.z1);if(hi-lo>.05)wall(false,p.x1,lo,hi,d,v)}
+  if(Math.abs(p.z1-q.z0)<E){const lo=Math.max(p.x0,q.x0),hi=Math.min(p.x1,q.x1);if(hi-lo>.05)wall(true,p.z1,lo,hi,d,v)}}}
+wall(true,0,0,40,[[3.5,4],[30,2]]);            // norte: ingreso de camiones y salida de cáscara
+wall(true,25,0,40,[[4.5,1.8],[28,2],[36,2.5]]); // sur: oficinas, caldero, residuos
+wall(false,0,0,25,[[12,3.5]]);                  // oeste: despacho
+wall(false,40,0,25,[[14.6,2.4]]);               // este: hacia el secador solar
+
+// ---------- Equipos ----------
+const INOX=0xB9C3C8,VERDE=0x3E8E5A,MANGO=0xE5B23A,CARTON=0xB98C55,OSC=0x2B3A33;
+function crates(x0,z0,nx,nz,lv){const cw=.55,cd=.4,ch=.3;
+ for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const cx=x0+cw/2+i*cw,cz=z0+cd/2+j*cd;
+  for(let k=0;k<lv;k++)B(cx,cz,cw-.04,cd-.04,ch-.02,VERDE,k*ch,false);B(cx,cz,cw-.1,cd-.1,.05,MANGO,lv*ch-.07,false)}
+ COL.push([x0,x0+nx*cw,z0,z0+nz*cd])}
+function table(cx,cz,w,d,h=.9,top=INOX){B(cx,cz,w,d,.05,top,h-.05,false);
+ for(const sx of[-1,1])for(const sz of[-1,1])B(cx+sx*(w/2-.06),cz+sz*(d/2-.06),.05,.05,h-.05,INOX,0,false);COL.push([cx-w/2,cx+w/2,cz-d/2,cz+d/2])}
+function worker(x,z,ry=0){const g=new THREE.Group();
+ const add=(geo,c,y)=>{const me=new THREE.Mesh(geo,mat(c));me.position.y=y;g.add(me)};
+ add(bgeo(.34,.8,.22),0x34495E,.4);add(new THREE.CylinderGeometry(.2,.22,.7,12),0xF4F4F0,1.15);
+ add(new THREE.SphereGeometry(.13,14,10),0xB98058,1.63);add(new THREE.CylinderGeometry(.14,.14,.09,14),0xFFFFFF,1.74);
+ add(bgeo(.3,.18,.04),0x8FB7C9,1.58);g.children[4].position.z=-.12;
+ g.position.set(x,0,z);g.rotation.y=ry;S.add(g);COL.push([x-.25,x+.25,z-.25,z+.25])}
+function cart(cx,cz){for(const sx of[-1,1])for(const sz of[-1,1])B(cx+sx*.42,cz+sz*.62,.04,.04,1.9,INOX,0,false);
+ for(let k=0;k<12;k++){B(cx,cz,.84,1.24,.02,INOX,.2+k*.14,false);B(cx,cz,.74,1.1,.015,0xD9822B,.225+k*.14,false)}
+ COL.push([cx-.45,cx+.45,cz-.65,cz+.65])}
+function pallet(cx,cz,lv=4){B(cx,cz,1.2,1.0,.14,0x8B6B43,0,false);
+ for(let k=0;k<lv;k++)for(const sx of[-.3,.3])for(const sz of[-.25,.25])B(cx+sx,cz+sz,.58,.48,.29,k%2?0xC09460:CARTON,.14+k*.3,false);
+ COL.push([cx-.6,cx+.6,cz-.5,cz+.5])}
+
+// exterior: camión de fruta, contenedor a Paita, algarrobos, cerco y letrero
+B(7.4,-7.2,2.4,7.2,2.2,0xF2F2EE,.6);B(7.4,-11.6,2.3,1.6,2.0,0xC7462E,.5);
+for(const z of[-10,-4.5])for(const x of[6.3,8.5])cyl(x,z,.42,.3,0x222222,.0,false,true);
+crates(6.5,-3.4,3,1,3);
+B(-5.6,12,6.1,2.44,2.6,0x2F6E8F,.9);B(-9.8,12,2.0,2.3,2.2,0xF2F2EE,.6);
+for(const [x,z] of[[-8,-3],[-11,4],[-9,24],[16,-10],[26,-12],[36,-8],[54,-4],[58,20],[46,28],[24,30],[8,30],[-12,30]]){
+ cyl(x,z,.25,2.2,0x6B4E31,0);const cp=new THREE.Mesh(new THREE.SphereGeometry(2.1,14,10),mat(0x5D7F3A));cp.scale.y=.6;cp.position.set(x,3.1,z);S.add(cp)}
+for(let x=-14;x<=58;x+=4){if(x>-1&&x<11)continue;B(x,-17,.12,.12,1.8,0x5B5B57,0,false)}
+for(let x=-14;x<=58;x+=4)B(x,33,.12,.12,1.8,0x5B5B57,0,false);
+for(let z=-17;z<=33;z+=4){B(-14,z,.12,.12,1.8,0x5B5B57,0,false);B(58,z,.12,.12,1.8,0x5B5B57,0,false)}
+box(-14,-1,-17.05,-16.95,1.4,1.5,0x5B5B57,false);box(11,58,-17.05,-16.95,1.4,1.5,0x5B5B57,false);
+box(-14,58,32.95,33.05,1.4,1.5,0x5B5B57,false);box(-14.05,-13.95,-17,33,1.4,1.5,0x5B5B57,false);box(57.95,58.05,-17,33,1.4,1.5,0x5B5B57,false);
+COL.push([-14.1,-1,-17.1,-16.9],[11,58.1,-17.1,-16.9],[-14.1,58.1,32.9,33.1],[-14.1,-13.9,-17,33],[57.9,58.1,-17,33]);
+
+// 1 recepción
+B(3.5,3.2,1.6,1.6,.08,0x6F7A80,0,false);B(5.1,2.4,.12,.12,1.3,OSC);B(5.1,2.4,.5,.12,.35,0x1B2A22,1.3,false);
+crates(.4,.6,2,4,4);crates(.4,4.9,2,3,3);crates(5.6,.5,2,2,4);
+// 2 almacén MP (cámara fría)
+for(const [z0,x0,x1] of[[.4,7.6,14.4],[2.7,9,13]]){B((x0+x1)/2,z0+.5,x1-x0,1,.04,INOX,1.0,false);B((x0+x1)/2,z0+.5,x1-x0,1,.04,INOX,2.0,false);
+ for(let x=x0+.3;x<x1;x+=.6){B(x,z0+.5,.5,.8,.28,VERDE,1.04,false);B(x,z0+.5,.42,.7,.05,MANGO,1.3,false);B(x,z0+.5,.5,.8,.28,VERDE,2.04,false);B(x,z0+.5,.42,.7,.05,MANGO,2.3,false);B(x,z0+.5,.5,.8,.28,VERDE,0,false);B(x,z0+.5,.42,.7,.05,MANGO,.26,false)}
+ COL.push([x0,x1,z0,z0+1])}
+B(11,.35,2.2,.5,.6,0xF7F7F7,3.1,false);
+const frio=new THREE.PointLight(0x9FD8FF,.7,10);frio.position.set(11,3.5,4);S.add(frio);
+// 3 selección y lavado
+table(16.6,2.2,1.0,2.4);worker(17.6,1.6,-Math.PI/2);worker(17.6,2.8,-Math.PI/2);
+B(20.4,1.7,3.8,1.6,1.0,INOX);B(20.4,1.7,3.6,1.4,.02,new THREE.MeshLambertMaterial({color:0x5DB4D8}),.97,false);
+for(const x of[19.2,20.4,21.6])box(x-.03,x+.03,.9,2.5,1.6,1.66,INOX,false);
+B(17.2,7.3,.6,.6,.7,0xC0392B);
+// 4 pelado, laminado y pretratamiento
+table(24.6,1.5,2.4,1.0);table(27.3,1.5,2.4,1.0);
+worker(24.1,2.4,Math.PI);worker(25.2,2.4,Math.PI);worker(26.8,2.4,Math.PI);worker(27.9,2.4,Math.PI);
+for(const z of[1.2,3.0]){B(31.8,z,.8,.8,1.2,INOX);B(31.8,z,.5,.5,.12,0xF0A030,1.2,false)}
+for(const x of[25,27]){cyl(x,4.1,.55,.9,INOX);cyl(x,4.1,.5,.02,0xF2E2A0,.9,false)}
+B(30,4.3,.8,.8,.75,0x2F6B3A);B(30,4.3,.7,.7,.04,0x7A8F3A,.75,false);
+// 5 túnel de secado
+box(34.6,34.8,1,12.8,0,2.8,0x5D6A70,false);box(39.2,39.4,1,12.8,0,2.8,0x5D6A70,false);box(34.6,39.4,1,12.8,2.6,2.8,0x5D6A70,false);
+box(34.6,39.4,1,1.2,0,2.8,0x5D6A70,false);COL.push([34.6,39.4,1,12.8]);
+for(let z=11.8;z>2;z-=1.5)for(const x of[35.9,38.1])cart(x,z);
+const calor=new THREE.PointLight(0xFF9A40,1.1,9);calor.position.set(37,2.2,8);S.add(calor);
+B(37,2.2,4.0,1.8,.8,0x9A3B2A,2.8,false);cyl(37,7,.25,8,0x8E989D,-.65,false,false).rotation.x=Math.PI/2;
+B(34.4,10,.4,1,1.8,0x26332C);B(34.2,10,.02,.6,.4,new THREE.MeshBasicMaterial({color:0xF0A030}),1.2,false);
+cart(38.6,13.6);
+// secador solar (exterior)
+const PLAS=new THREE.MeshLambertMaterial({color:0xF4F8F8,transparent:true,opacity:.35,side:THREE.DoubleSide});
+box(41.5,51.5,1.9,2.1,0,2.4,PLAS);box(41.4,41.6,2,12,0,2.4,PLAS);box(51.4,51.6,2,12,0,2.4,PLAS);
+box(41.5,45,11.9,12.1,0,2.4,PLAS);box(48,51.5,11.9,12.1,0,2.4,PLAS);
+for(const s of[-1,1]){const p=new THREE.Mesh(new THREE.PlaneGeometry(10,5.5),PLAS);p.position.set(46.5,3.2,7+s*2.5);p.rotation.x=-Math.PI/2+s*.38;S.add(p)}
+for(const z of[4.5,8.5]){table(46.5,z,7,1.2,.9,0x9AA4A9);B(46.5,z,6.8,1.1,.02,0xE58E2F,.9,false)}
+// 6 enfriado, acondicionado y selección final
+cart(24.5,9.2);cart(26.5,9.2);cart(28.5,9.2);
+table(26,11.3,2.4,1.0);worker(25.4,12.2,Math.PI);worker(26.6,12.2,Math.PI);
+B(30.7,11,3.4,.8,.85,0x2B2B2B);B(30.7,11,.6,1.1,1.5,0xC9CFD3);B(30.7,11,.62,1.12,.25,0xC0392B,1.25,false);
+// 7 envasado
+table(16,9.6,2.4,1.0);B(16.3,9.6,.5,.5,.12,0x26332C,.9,false);
+B(20.3,9.5,2.6,.9,1.0,INOX);B(20.3,9.5,2.6,.5,.04,0x2B2B2B,1.0,false);
+worker(16,10.6,Math.PI);worker(20.2,10.6,Math.PI);
+pallet(14,9.2,3);B(19.5,15.6,1.8,.7,.01,new THREE.MeshLambertMaterial({color:0x5DB4D8}),.01,false);
+// 8 almacén de producto terminado
+for(const x of[1.2,2.7,4.2,5.7,7.2,8.7,10.2,11.7])pallet(x,8.8,4);
+for(const x of[5.5,7,8.5,10])pallet(x,10.6,3);
+B(9.5,12.6,.6,1.4,.12,0xD9A21E,.05,false);B(9.5,13.4,.6,.15,1.0,0xD9A21E,0,false);
+// oficinas
+for(const z of[18.2,20.8,23.4]){table(1,z,.8,1.4,.75,0xA88B64);B(1.1,z,.08,.5,.32,0x1B1B1B,.75,false);B(1.95,z,.45,.45,.45,0x2B3A33,0,false)}
+table(6.8,22.8,1.8,1.0,.75,0xA88B64);
+// laboratorio
+B(12.5,24.25,6,.8,.9,0xF4F4F0);for(const [x,c] of[[10.2,0x2B3A33],[11.4,0xDADADA],[12.8,0x2B5F8A],[14.3,0x2B3A33]])B(x,24.2,.5,.4,.3,c,.9,false);
+B(9.95,16.7,.7,.7,1.8,0xF7F7F7);worker(12,23.2,0);
+// vestuarios
+B(20,24.65,7,.45,1.9,0x6C8AA0);for(let x=16.75;x<23.5;x+=.5)box(x-.005,x+.005,24.42,24.43,.1,1.8,0x4A6578,false);
+B(23.6,17.7,.6,1.8,.9,0xF7F7F7);B(20,21.5,3,.4,.45,0xA88B64);
+// caldero GLP y mantenimiento
+cyl(30,18.5,.75,3.6,0xF2F2EE,.2,true,true);B(28.6,18.5,.15,1,.4,0x777777,0,false);B(31.4,18.5,.15,1,.4,0x777777,0,false);
+B(26,18,2,1,1.3,0x2F5D3A);B(25.5,24.35,2,.7,.9,0x7A6A55);
+// residuos
+for(const x of[34,36.5,39]){B(x,17.1,2,1.4,1.2,0x2F6B3A);B(x,17.1,1.9,1.3,.04,0x9A7A2E,1.2,false)}
+const pila=new THREE.Mesh(new THREE.ConeGeometry(1.3,1,18),mat(0x8A6A2E));pila.position.set(34.5,.5,22.5);S.add(pila);COL.push([33.4,35.6,21.4,23.6]);
+
+// ---------- Letreros ----------
+function label(txt,sub,x,y,z,w,fg,bg){const c=document.createElement('canvas');c.width=1024;c.height=sub?260:170;const g=c.getContext('2d');
+ g.fillStyle=bg||'rgba(19,32,26,.9)';const r=24;g.beginPath();g.moveTo(r,0);g.arcTo(c.width,0,c.width,c.height,r);g.arcTo(c.width,c.height,0,c.height,r);g.arcTo(0,c.height,0,0,r);g.arcTo(0,0,c.width,0,r);g.fill();
+ g.textAlign='center';g.textBaseline='middle';let fs=86;g.font=`800 ${fs}px 'Bricolage Grotesque','IBM Plex Sans',Arial`;
+ while(g.measureText(txt).width>960&&fs>40){fs-=4;g.font=`800 ${fs}px 'Bricolage Grotesque','IBM Plex Sans',Arial`}
+ g.fillStyle=fg||'#F3EDE2';g.fillText(txt,512,sub?100:88);
+ if(sub){g.font="500 46px 'IBM Plex Mono',Consolas,monospace";g.fillStyle='#F0A030';g.fillText(sub,512,200)}
+ const tx=new THREE.CanvasTexture(c);tx.anisotropy=4;const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthWrite:false}));
+ sp.scale.set(w,w*c.height/c.width,1);sp.position.set(x,y,z);S.add(sp);return sp}
+const ZTXT={sucia:'ZONA SUCIA',limpia:'ZONA LIMPIA',secado:'SECADO',serv:'SERVICIOS'};
+const SHORT={r1:'Recepción y pesado',r2:'Almacén de MP',r3:'Selección y lavado',r4:'Pelado y laminado',r5:'Túnel de secado',r6:'Enfriado y selección',r7:'Envasado',r8:'Almacén PT y despacho',of:'Oficinas',lab:'Laboratorio',ves:'Vestuarios',cal:'Caldero GLP',res:'Residuos'};
+
+// ---------- Flujo de producto: fresco → láminas → seco → caja ----------
+const ROUTE=[[7.4,-3.2],[3.5,-3.2],[3.5,6.4],[36.5,6.4],[36.5,14.4],[4.5,14.4],[4.5,12],[-2.6,12]];
+for(let i=0;i<ROUTE.length-1;i++){const [ax,az]=ROUTE[i],[bx,bz]=ROUTE[i+1];
+ box(Math.min(ax,bx)-.06,Math.max(ax,bx)+.06,Math.min(az,bz)-.06,Math.max(az,bz)+.06,.012,.022,0xF0C030,false)}
+const SEGL=[];let RL=0;for(let i=0;i<ROUTE.length-1;i++){const l=Math.hypot(ROUTE[i+1][0]-ROUTE[i][0],ROUTE[i+1][1]-ROUTE[i][1]);SEGL.push(l);RL+=l}
+function along(s){for(let i=0;i<SEGL.length;i++){if(s<=SEGL[i]){const f=s/SEGL[i];return[ROUTE[i][0]+(ROUTE[i+1][0]-ROUTE[i][0])*f,ROUTE[i][1]+(ROUTE[i+1][1]-ROUTE[i][1])*f]}s-=SEGL[i]}return ROUTE[ROUTE.length-1]}
+const GW=new THREE.SphereGeometry(.1,12,8),GS=bgeo(.22,.03,.12),GD=bgeo(.15,.02,.09),GB=bgeo(.4,.25,.3);
+const items=[];
+function spawn(){const g=new THREE.Group();
+ const w=new THREE.Mesh(GW,mat(0xD9B23A));w.scale.set(1.25,1,.95);
+ g.add(w,new THREE.Mesh(GS,mat(0xF4A020)),new THREE.Mesh(GD,mat(0xC0601C)),new THREE.Mesh(GB,mat(CARTON)));
+ S.add(g);items.push({g,s:0,discard:Math.random()<.07,fall:0})}
+const inside=(r,x,z)=>x>=r.x0&&x<=r.x1&&z>=r.z0&&z<=r.z1;
+function roomAt(x,z){for(const r of ROOMS)if(inside(r,x,z))return r.id;return inside(SOLAR,x,z)?'solar':'ext'}
+function stage(x,z){const id=roomAt(x,z);
+ if(id==='r5')return(x>34.6&&x<39.4&&z>1&&z<12.8)?-1:2;
+ if(id==='r4')return x<25.5?0:1;
+ if(id==='r6')return 2;if(id==='r7')return x<19.5?3:2;if(id==='r8')return 3;
+ if(id==='ext')return x<1?3:0;return 0}
+let spawnT=0;
+function flow(dt){spawnT-=dt;if(spawnT<=0){spawn();spawnT=1.6}
+ for(let i=items.length-1;i>=0;i--){const it=items[i];
+  if(it.fall){it.fall+=dt;const f=Math.min(it.fall/.6,1);it.g.position.set(it.fx+(17.2-it.fx)*f,1.05-.35*f,6.4+.9*f);if(f>=1){S.remove(it.g);items.splice(i,1)}continue}
+  it.s+=1.3*dt;if(it.s>=RL){S.remove(it.g);items.splice(i,1);continue}
+  const [x,z]=along(it.s);
+  if(it.discard&&x>=16.9&&x<17.5&&z>6&&z<7){it.fall=1e-3;it.fx=x;continue}
+  const st=stage(x,z);it.g.position.set(x,1.05,z);it.g.visible=st>=0;it.g.children.forEach((c,k)=>c.visible=k===st);
+  it.g.rotation.y+=dt*.6}}
+
+// ---------- Jugador ----------
+const P={x:3.5,z:-14,yaw:Math.PI,pitch:-.05,bob:0};
+const RAD=.3;
+const blocked=(x,z)=>{for(const c of COL)if(x>c[0]-RAD&&x<c[1]+RAD&&z>c[2]-RAD&&z<c[3]+RAD)return true;return x<-13.5||x>57.5||z<-16.5||z>32.5};
+function move(f,s,run,dt){const sp=(run?6:3.2)*dt,sy=Math.sin(P.yaw),cy=Math.cos(P.yaw);
+ const dx=(-sy*f+cy*s)*sp,dz=(-cy*f-sy*s)*sp;
+ if(!blocked(P.x+dx,P.z))P.x+=dx;if(!blocked(P.x,P.z+dz))P.z+=dz;
+ const m=Math.min(1,Math.hypot(f,s));P.bob+=dt*(run?13:9)*m;return m}
+function go(i){const n=STATIONS.length;st=(i%n+n)%n;const [,x,z,y]=STATIONS[st];P.x=x;P.z=z;P.yaw=y;P.pitch=-.08;toast(INFO[STATIONS[st][0]].t)}
+let st=9;
+
+// ---------- Interfaz ----------
+const $=id=>document.getElementById(id);
+let cur='',cardOn=false,mapOn=false,playing=false,padOn=false;
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove('on'),1600)}
+function renderCard(){const d=INFO[cur];$('card').innerHTML=`<span class="chip mono" style="color:#F0A030;font-size:12px;letter-spacing:1.5px;text-transform:uppercase">${d.z}</span>
+ <h2>${d.t}</h2><div class="dop">DOP: ${d.d}</div><p>${d.r}</p><table>${d.f.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table>
+ ${d.c?`<div class="calc">${d.c}</div>`:''}<div class="tip"><b>Para la exposición:</b> ${d.p}</div><div class="cerrar">${padOn?'A / ✕ o B / ○':'E'} para cerrar</div>`}
+function setCard(v){cardOn=v;$('card').classList.toggle('on',v);if(v)renderCard()}
+function setMap(v){mapOn=v;$('mapa').classList.toggle('on',v)}
+function hud(){const id=roomAt(P.x,P.z);if(id===cur)return;cur=id;const d=INFO[id];
+ $('aZona').textContent=d.z;$('aNom').textContent=d.t;if(cardOn)renderCard();
+ if(id==='r5'||id==='r6')rumble()}
+function helpText(){$('help').textContent=padOn?'Stick izq. moverse · Stick der. mirar · RT correr · A ficha · Y mapa · LB/RB otra área · Start pausa'
+ :'WASD moverse · Mouse mirar · Shift correr · E ficha · M mapa · 1–8 áreas · Q/R anterior/siguiente · Esc pausa';
+ $('aHint').textContent=padOn?'Botón A / ✕: ver la ficha del área':'Tecla E: ver la ficha del área'}
+
+// mapa: mismo dibujo para el mini y el grande
+const WB={x0:-14,x1:56,z0:-16,z1:32};
+function drawMap(cv,big){const g=cv.getContext('2d'),W=cv.width,Hh=cv.height,sx=W/(WB.x1-WB.x0),sz=Hh/(WB.z1-WB.z0);
+ const X=x=>(x-WB.x0)*sx,Z=z=>(z-WB.z0)*sz;g.clearRect(0,0,W,Hh);g.fillStyle='#1C2B23';g.fillRect(0,0,W,Hh);
+ g.strokeStyle='#F0C030';g.lineWidth=big?3:2;g.beginPath();ROUTE.forEach(([x,z],i)=>i?g.lineTo(X(x),Z(z)):g.moveTo(X(x),Z(z)));g.stroke();
+ for(const r of ROOMS){g.fillStyle=ZHEX[r.zona];g.globalAlpha=.55;g.fillRect(X(r.x0),Z(r.z0),(r.x1-r.x0)*sx,(r.z1-r.z0)*sz);g.globalAlpha=1;
+  g.strokeStyle=r.id===cur?'#F0A030':'#13201A';g.lineWidth=r.id===cur?(big?6:4):2;g.strokeRect(X(r.x0),Z(r.z0),(r.x1-r.x0)*sx,(r.z1-r.z0)*sz);
+  if(big){g.fillStyle='#F3EDE2';g.font="600 22px 'IBM Plex Sans',Arial";g.textAlign='center';
+   const maxW=(r.x1-r.x0)*sx-14,ls=[];let ln='';
+   for(const w of((r.num?r.num+'. ':'')+SHORT[r.id]).split(' ')){const t=ln?ln+' '+w:w;if(ln&&g.measureText(t).width>maxW){ls.push(ln);ln=w}else ln=t}
+   ls.push(ln);const cy=Z((r.z0+r.z1)/2)-(ls.length-1)*13+8;ls.forEach((t,i)=>g.fillText(t,X((r.x0+r.x1)/2),cy+i*26))}}
+ g.strokeStyle=cur==='solar'?'#F0A030':'#AEB9B0';g.lineWidth=big?4:2;g.strokeRect(X(SOLAR.x0),Z(SOLAR.z0),10*sx,10*sz);
+ if(big){g.fillStyle='#F3EDE2';g.fillText('9. Secador solar',X(46.5),Z(7)+8);g.fillText('0. Ingreso',X(3.5),Z(-12));
+  g.fillStyle='#AEB9B0';g.font="500 20px 'IBM Plex Mono',monospace";g.fillText('N ↑',X(-11),Z(-13))}
+ const px=X(P.x),pz=Z(P.z),fx=-Math.sin(P.yaw),fz=-Math.cos(P.yaw),k=big?22:12;
+ g.fillStyle='#F0A030';g.beginPath();g.moveTo(px+fx*k,pz+fz*k);g.lineTo(px-fz*k*.55-fx*k*.5,pz+fx*k*.55-fz*k*.5);g.lineTo(px+fz*k*.55-fx*k*.5,pz-fx*k*.55-fz*k*.5);g.closePath();g.fill()}
+
+// ---------- Entrada: teclado, mouse y mando ----------
+const keys=new Set();
+addEventListener('keydown',e=>{keys.add(e.code);if(!playing)return;
+ if(e.code==='KeyE')setCard(!cardOn);
+ if(e.code==='KeyM')setMap(!mapOn);
+ if(e.code==='KeyQ')go(st-1);if(e.code==='KeyR')go(st+1);
+ const n='12345678'.indexOf(e.key);if(n>=0)go(n);if(e.key==='9')go(5);if(e.key==='0')go(9);
+ if(e.code.startsWith('Arrow')||e.code==='Space'||e.code==='Tab')e.preventDefault()});
+addEventListener('keyup',e=>keys.delete(e.code));
+addEventListener('blur',()=>keys.clear());
+addEventListener('mousemove',e=>{if(document.pointerLockElement!==cv)return;P.yaw-=e.movementX*.0022;P.pitch=Math.max(-1.35,Math.min(1.35,P.pitch-e.movementY*.0022))});
+function start(){playing=true;$('menu').classList.add('off');helpText()}
+function pause(){playing=false;setMap(false);$('menu').classList.remove('off');$('go').textContent='Continuar recorrido'}
+$('go').onclick=()=>{start();cv.requestPointerLock&&cv.requestPointerLock()};
+cv.addEventListener('click',()=>{if(playing&&document.pointerLockElement!==cv)cv.requestPointerLock()});
+document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement!==cv&&playing&&!padOn)pause()});
+
+let prev=[];
+const dz=v=>Math.abs(v)<.15?0:(v-Math.sign(v)*.15)/.85;
+function getPad(){const ps=navigator.getGamepads?navigator.getGamepads():[];for(const p of ps)if(p&&p.connected)return p;return null}
+function rumble(){const p=getPad();try{p&&p.vibrationActuator&&p.vibrationActuator.playEffect('dual-rumble',{duration:160,strongMagnitude:.45,weakMagnitude:.3})}catch(e){}}
+addEventListener('gamepadconnected',e=>{const p=e.gamepad;padOn=true;helpText();
+ $('pad').textContent=`Mando conectado: ${p.id.replace(/\(.*\)/,'').trim()||'genérico'}`+(p.mapping==='standard'?'. Presiona A / ✕ para empezar.':'. Mapeo no estándar: algunos botones pueden estar cambiados.');
+ $('pad').classList.add('ok');toast('Mando conectado')});
+addEventListener('gamepaddisconnected',()=>{padOn=!!getPad();helpText();$('pad').textContent='Mando desconectado.';$('pad').classList.remove('ok')});
+function pad(dt){const p=getPad();if(!p)return{f:0,s:0,run:false};
+ const b=i=>!!(p.buttons[i]&&p.buttons[i].pressed),edge=i=>b(i)&&!prev[i];
+ let out={f:0,s:0,run:false};
+ if(!playing){if(edge(0)||edge(9))start()}
+ else{
+  out.s=dz(p.axes[0]||0);out.f=-dz(p.axes[1]||0);
+  P.yaw-=dz(p.axes[2]||0)*2.6*dt;P.pitch=Math.max(-1.35,Math.min(1.35,P.pitch-dz(p.axes[3]||0)*1.8*dt));
+  out.run=(p.buttons[7]&&p.buttons[7].value>.4)||b(10);
+  if(edge(0))setCard(!cardOn);if(edge(1)){setCard(false);setMap(false)}
+  if(edge(3))setMap(!mapOn);if(edge(4)||edge(14))go(st-1);if(edge(5)||edge(15))go(st+1);
+  if(edge(9)){document.exitPointerLock&&document.exitPointerLock();pause()}}
+ prev=p.buttons.map(x=>x.pressed);return out}
+
+// ---------- Bucle ----------
+function resize(){const w=innerWidth,h=innerHeight;rnd.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+addEventListener('resize',resize);resize();
+const clk=new THREE.Clock();
+function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),.05);
+ const gp=pad(dt);let mv=0;
+ if(playing){const k=c=>keys.has(c)?1:0;
+  let f=k('KeyW')+k('ArrowUp')-k('KeyS')-k('ArrowDown')+gp.f,s=k('KeyD')+k('ArrowRight')-k('KeyA')-k('ArrowLeft')+gp.s;
+  const l=Math.hypot(f,s);if(l>1){f/=l;s/=l}
+  mv=move(f,s,keys.has('ShiftLeft')||keys.has('ShiftRight')||gp.run,dt)}
+ flow(dt);hud();
+ cam.position.set(P.x,1.65+Math.sin(P.bob)*.035*mv,P.z);cam.rotation.set(P.pitch,P.yaw,0);
+ rnd.render(S,cam);drawMap($('mini'),false);if(mapOn)drawMap($('big'),true)}
+
+// letreros después de cargar las fuentes (si no hay internet, usan Arial)
+Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]).then(()=>{
+ for(const r of ROOMS)label(SHORT[r.id],(r.num?r.num+' · ':'')+ZTXT[r.zona],(r.x0+r.x1)/2,3.5,r.id==='r5'?14.4:(r.z0+r.z1)/2,r.x1-r.x0<8?3.6:4.4);
+ label('PCC 1 · humedad ≤ 18 %',null,37,3.3,12.9,3.4,'#13201A','rgba(240,160,48,.95)');
+ label('PCC 2 · detector de metales',null,30.7,2.5,11,2.8,'#13201A','rgba(240,160,48,.95)');
+ label('Acondicionado 24 h',null,26.5,2.35,9.2,2.6);
+ label('Secador solar · 100 m²','9 · PRESECADO',46.5,4.6,12.2,4.4);
+ label('Sol de Tambogrande S.A.C.','MANGOSOL',5,3.2,-16.6,5);
+ label('Descarte 7 %',null,17.2,1.2,7.3,1.4,'#F3EDE2','rgba(192,57,43,.95)');
+ label('Contenedor 20\' a Paita',null,-5.6,4.1,12,3.6);
+ label('Mango fresco · 9,000 kg/día',null,7.4,3.3,-7.2,3.6);
+});
+helpText();loop();
+</script>
+</body></html>
