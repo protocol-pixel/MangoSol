@@ -141,8 +141,8 @@ const ZHEX={sucia:'#6F8A77',limpia:'#CFC3A6',secado:'#D9A766',serv:'#59625C'};
 const DOORS={'r1|r2':[6.2,3],'r2|r3':[6.2,3],'r3|r4':[6.2,3],'r4|r5':[6.2,3],'r5|r6':[14.2,3],'r6|r7':[14.2,3],'r7|r8':[14.2,3],
  'of|r8':[4.5,1.8],'lab|of':[20.5,1.4],'lab|r7':[14.5,1.6],'lab|ves':[20.5,1.4],'r7|ves':[19.5,1.8],'cal|ves':[20.5,1.4]};
 const VENT=new Set(['r1|r8','r2|r8','r2|r7','r3|r7','r4|r6']);
-const STATIONS=[['r1',4.5,6.8,.6],['r2',11,6.6,0],['r3',19.5,6.6,0],['r4',29.5,7.2,.45],['r5',35.6,15.6,-.15],['solar',46.5,16,0],
- ['r6',28,14.6,0],['r7',18,14.2,0],['r8',7,14.2,.3],['ext',3.5,-14,Math.PI],['lab',12.5,18.2,Math.PI],['of',5,18,2.36],
+const STATIONS=[['r1',5.2,5.3,.6],['r2',11,5.3,0],['r3',19.5,5.3,0],['r4',29.5,5.3,.45],['r5',35.6,15.6,-.15],['solar',46.5,16,0],
+ ['r6',28,13.3,0],['r7',18,13.3,0],['r8',7,13.3,.3],['ext',3.5,-14,Math.PI],['lab',12.5,18.2,Math.PI],['of',5,18,2.36],
  ['ves',20,18,Math.PI],['cal',26.5,21.8,-.85],['res',36,22.8,0]];
 
 // ---------- Escena ----------
@@ -217,7 +217,7 @@ function pallet(cx,cz,lv=4){B(cx,cz,1.2,1.0,.14,0x8B6B43,0,false);
 // exterior: camión de fruta, contenedor a Paita, algarrobos, cerco y letrero
 B(7.4,-7.2,2.4,7.2,2.2,0xF2F2EE,.6);B(7.4,-11.6,2.3,1.6,2.0,0xC7462E,.5);
 for(const z of[-10,-4.5])for(const x of[6.3,8.5])cyl(x,z,.42,.3,0x222222,.0,false,true);
-crates(6.5,-3.4,3,1,3);
+
 B(-5.6,12,6.1,2.44,2.6,0x2F6E8F,.9);B(-9.8,12,2.0,2.3,2.2,0xF2F2EE,.6);
 for(const [x,z] of[[-8,-3],[-11,4],[-9,24],[16,-10],[26,-12],[36,-8],[54,-4],[58,20],[46,28],[24,30],[8,30],[-12,30]]){
  cyl(x,z,.25,2.2,0x6B4E31,0);const cp=new THREE.Mesh(new THREE.SphereGeometry(2.1,14,10),mat(0x5D7F3A));cp.scale.y=.6;cp.position.set(x,3.1,z);S.add(cp)}
@@ -229,7 +229,7 @@ box(-14,58,32.95,33.05,1.4,1.5,0x5B5B57,false);box(-14.05,-13.95,-17,33,1.4,1.5,
 COL.push([-14.1,-1,-17.1,-16.9],[11,58.1,-17.1,-16.9],[-14.1,58.1,32.9,33.1],[-14.1,-13.9,-17,33],[57.9,58.1,-17,33]);
 
 // 1 recepción
-B(3.5,3.2,1.6,1.6,.08,0x6F7A80,0,false);B(5.1,2.4,.12,.12,1.3,OSC);B(5.1,2.4,.5,.12,.35,0x1B2A22,1.3,false);
+B(5.4,3.4,1.6,1.6,.08,0x6F7A80,0,false);B(6.5,3.4,.12,.12,1.3,OSC);B(6.5,3.4,.12,.5,.35,0x1B2A22,1.3,false);
 crates(.4,.6,2,4,4);crates(.4,4.9,2,3,3);crates(5.6,.5,2,2,4);
 // 2 almacén MP (cámara fría)
 for(const [z0,x0,x1] of[[.4,7.6,14.4],[2.7,9,13]]){B((x0+x1)/2,z0+.5,x1-x0,1,.04,INOX,1.0,false);B((x0+x1)/2,z0+.5,x1-x0,1,.04,INOX,2.0,false);
@@ -265,11 +265,11 @@ for(const z of[4.5,8.5]){table(46.5,z,7,1.2,.9,0x9AA4A9);B(46.5,z,6.8,1.1,.02,0x
 // 6 enfriado, acondicionado y selección final
 cart(24.5,9.2);cart(26.5,9.2);cart(28.5,9.2);
 table(26,11.3,2.4,1.0);worker(25.4,12.2,Math.PI);worker(26.6,12.2,Math.PI);
-B(30.7,11,3.4,.8,.85,0x2B2B2B);B(30.7,11,.6,1.1,1.5,0xC9CFD3);B(30.7,11,.62,1.12,.25,0xC0392B,1.25,false);
+B(30.7,13.98,.6,.12,1.5,0xC9CFD3);B(30.7,14.82,.6,.12,1.5,0xC9CFD3);B(30.7,14.4,.6,.96,.4,0xC9CFD3,1.1,false);B(30.7,14.4,.62,.98,.12,0xC0392B,1.38,false);
 // 7 envasado
 table(16,9.6,2.4,1.0);B(16.3,9.6,.5,.5,.12,0x26332C,.9,false);
-B(20.3,9.5,2.6,.9,1.0,INOX);B(20.3,9.5,2.6,.5,.04,0x2B2B2B,1.0,false);
-worker(16,10.6,Math.PI);worker(20.2,10.6,Math.PI);
+B(20.1,13.98,1.0,.12,1.5,INOX);B(20.1,14.82,1.0,.12,1.5,INOX);B(20.1,14.4,1.0,.96,.45,INOX,1.1,false);B(20.1,14.4,1.02,.98,.06,0x2B5F8A,1.3,false);
+worker(16,10.6,Math.PI);worker(20.1,13.2,0);
 pallet(14,9.2,3);B(19.5,15.6,1.8,.7,.01,new THREE.MeshLambertMaterial({color:0x5DB4D8}),.01,false);
 // 8 almacén de producto terminado
 for(const x of[1.2,2.7,4.2,5.7,7.2,8.7,10.2,11.7])pallet(x,8.8,4);
@@ -305,8 +305,29 @@ const SHORT={r1:'Recepción y pesado',r2:'Almacén de MP',r3:'Selección y lavad
 
 // ---------- Flujo de producto: fresco → láminas → seco → caja ----------
 const ROUTE=[[7.4,-3.2],[3.5,-3.2],[3.5,6.4],[36.5,6.4],[36.5,14.4],[4.5,14.4],[4.5,12],[-2.6,12]];
-for(let i=0;i<ROUTE.length-1;i++){const [ax,az]=ROUTE[i],[bx,bz]=ROUTE[i+1];
- box(Math.min(ax,bx)-.06,Math.max(ax,bx)+.06,Math.min(az,bz)-.06,Math.max(az,bz)+.06,.012,.022,0xF0C030,false)}
+// fajas transportadoras sobre la ruta: se cortan en cada puerta y en algunos cruces peatonales, y no entran al túnel (ahí van carros)
+const CORTES=[[3.5,0],[7,6.4],[15,6.4],[23,6.4],[33,14.4],[23,14.4],[13,14.4],[0,12],[8.5,14.4],[17,14.4],[26.6,14.4]];
+const sinFaja=(x,z)=>CORTES.some(([a,b])=>Math.abs(x-a)<.7&&Math.abs(z-b)<.7)||(x>32.4&&x<39.6&&z<12.8);
+function rayas(vert){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');
+ g.fillStyle='#2A2F2C';g.fillRect(0,0,64,64);g.fillStyle='#4A534E';vert?g.fillRect(0,0,14,64):g.fillRect(0,0,64,14);return c}
+const RU=rayas(true),RV=rayas(false),FAJAS=[];
+function faja(x0,z0,x1,z1){const enX=Math.abs(x1-x0)>Math.abs(z1-z0),L=enX?Math.abs(x1-x0):Math.abs(z1-z0),cx=(x0+x1)/2,cz=(z0+z1)/2;
+ const w=enX?L:.6,d=enX?.6:L;
+ B(cx,cz,w,d,.12,0x9AA4A9,.78,false);
+ const tx=new THREE.CanvasTexture(enX?RU:RV);tx.wrapS=tx.wrapT=THREE.RepeatWrapping;enX?tx.repeat.set(L*2,1):tx.repeat.set(1,L*2);
+ B(cx,cz,enX?L:.5,enX?.5:L,.03,new THREE.MeshLambertMaterial({map:tx}),.9,false);
+ for(const sd of[-1,1])enX?box(cx-L/2,cx+L/2,cz+sd*.29-.02,cz+sd*.29+.02,.9,.98,INOX,false):box(cx+sd*.29-.02,cx+sd*.29+.02,cz-L/2,cz+L/2,.9,.98,INOX,false);
+ for(let t=.25;t<L;t+=1.5)for(const sd of[-1,1])enX?B(cx-L/2+t,cz+sd*.25,.05,.05,.78,INOX,0,false):B(cx+sd*.25,cz-L/2+t,.05,.05,.78,INOX,0,false);
+ COL.push([cx-w/2,cx+w/2,cz-d/2,cz+d/2]);
+ // en la cara superior u crece hacia +x y v hacia −z: así la banda avanza en el sentido del flujo
+ FAJAS.push({tx,k:enX?'x':'y',s:enX?-Math.sign(x1-x0):Math.sign(z1-z0)})}
+for(let i=0;i<ROUTE.length-1;i++){const [ax,az]=ROUTE[i],[bx,bz]=ROUTE[i+1],L=Math.hypot(bx-ax,bz-az),n=Math.ceil(L/.05),ux=(bx-ax)/L,uz=(bz-az)/L;
+ let ini=null,k0=0;
+ for(let k=0;k<=n;k++){const x=ax+(bx-ax)*k/n,z=az+(bz-az)*k/n,ok=!sinFaja(x,z);
+  if(ok&&!ini){ini=[x,z];k0=k}
+  if(ini&&(!ok||k===n)){let e=ok?[x,z]:[ax+(bx-ax)*(k-1)/n,az+(bz-az)*(k-1)/n],a=ini.slice();
+   if(k0===0&&i>0){a[0]-=ux*.3;a[1]-=uz*.3}if(ok&&k===n&&i<ROUTE.length-2){e=[e[0]+ux*.3,e[1]+uz*.3]}
+   if(Math.hypot(e[0]-a[0],e[1]-a[1])>.3)faja(a[0],a[1],e[0],e[1]);ini=null}}}
 const SEGL=[];let RL=0;for(let i=0;i<ROUTE.length-1;i++){const l=Math.hypot(ROUTE[i+1][0]-ROUTE[i][0],ROUTE[i+1][1]-ROUTE[i][1]);SEGL.push(l);RL+=l}
 function along(s){for(let i=0;i<SEGL.length;i++){if(s<=SEGL[i]){const f=s/SEGL[i];return[ROUTE[i][0]+(ROUTE[i+1][0]-ROUTE[i][0])*f,ROUTE[i][1]+(ROUTE[i+1][1]-ROUTE[i][1])*f]}s-=SEGL[i]}return ROUTE[ROUTE.length-1]}
 const GW=new THREE.SphereGeometry(.1,12,8),GS=bgeo(.22,.03,.12),GD=bgeo(.15,.02,.09),GB=bgeo(.4,.25,.3);
@@ -323,13 +344,13 @@ function stage(x,z){const id=roomAt(x,z);
  if(id==='r6')return 2;if(id==='r7')return x<19.5?3:2;if(id==='r8')return 3;
  if(id==='ext')return x<1?3:0;return 0}
 let spawnT=0;
-function flow(dt){spawnT-=dt;if(spawnT<=0){spawn();spawnT=1.6}
+function flow(dt){for(const f of FAJAS)f.tx.offset[f.k]+=f.s*2.6*dt;spawnT-=dt;if(spawnT<=0){spawn();spawnT=1.6}
  for(let i=items.length-1;i>=0;i--){const it=items[i];
-  if(it.fall){it.fall+=dt;const f=Math.min(it.fall/.6,1);it.g.position.set(it.fx+(17.2-it.fx)*f,1.05-.35*f,6.4+.9*f);if(f>=1){S.remove(it.g);items.splice(i,1)}continue}
+  if(it.fall){it.fall+=dt;const f=Math.min(it.fall/.6,1);it.g.position.set(it.fx+(17.2-it.fx)*f,1.04-.34*f,6.4+.9*f);if(f>=1){S.remove(it.g);items.splice(i,1)}continue}
   it.s+=1.3*dt;if(it.s>=RL){S.remove(it.g);items.splice(i,1);continue}
   const [x,z]=along(it.s);
   if(it.discard&&x>=16.9&&x<17.5&&z>6&&z<7){it.fall=1e-3;it.fx=x;continue}
-  const st=stage(x,z);it.g.position.set(x,1.05,z);it.g.visible=st>=0;it.g.children.forEach((c,k)=>c.visible=k===st);
+  const st=stage(x,z);it.g.position.set(x,1.04,z);it.g.visible=st>=0;it.g.children.forEach((c,k)=>c.visible=k===st);
   it.g.rotation.y+=dt*.6}}
 
 // ---------- Jugador ----------
@@ -432,7 +453,7 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),.05
 Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]).then(()=>{
  for(const r of ROOMS)label(SHORT[r.id],(r.num?r.num+' · ':'')+ZTXT[r.zona],(r.x0+r.x1)/2,3.5,r.id==='r5'?14.4:(r.z0+r.z1)/2,r.x1-r.x0<8?3.6:4.4);
  label('PCC 1 · humedad ≤ 18 %',null,37,3.3,12.9,3.4,'#13201A','rgba(240,160,48,.95)');
- label('PCC 2 · detector de metales',null,30.7,2.5,11,2.8,'#13201A','rgba(240,160,48,.95)');
+ label('PCC 2 · detector de metales',null,30.7,2.4,14.4,2.8,'#13201A','rgba(240,160,48,.95)');
  label('Acondicionado 24 h',null,26.5,2.35,9.2,2.6);
  label('Secador solar · 100 m²','9 · PRESECADO',46.5,4.6,12.2,4.4);
  label('Sol de Tambogrande S.A.C.','MANGOSOL',5,3.2,-16.6,5);
