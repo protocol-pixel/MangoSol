@@ -125,9 +125,9 @@ const INFO={
  lab:{t:'Laboratorio de calidad',z:'Servicios',d:'—',r:'Control por lote de humedad, actividad de agua, color y microbiología básica; guarda muestras de retención.',
   f:[['Humedad final','15 – 18 %'],['Actividad de agua','aw < 0.65'],['Equipos','Medidor de humedad y refractómetro'],['Relación con envasado','I: importante']],
   c:null,p:'El laboratorio verifica el PCC 1: si la humedad pasa de 18 %, el lote vuelve al túnel.'},
- ves:{t:'Vestuarios y SS. HH.',z:'Servicios',d:'—',r:'Filtro sanitario: los operarios se cambian, se lavan las manos y pasan el pediluvio antes de entrar al proceso.',
-  f:[['Personal de campaña','22: 2 supervisores + 20 operarios'],['Turnos','2 de 8 h, 10 operarios por turno'],['Norma','Ley 29783, Seguridad y Salud en el Trabajo']],
-  c:'9 permanentes + 22 de campaña = 31 personas',p:'Los 22 de campaña solo trabajan de noviembre a abril.'},
+ ves:{t:'Vestuarios y SS. HH.',z:'Servicios',d:'—',r:'Filtro sanitario: el personal entra desde la calle, se cambia en vestidores separados para varones y damas, y sale al proceso por un pasillo limpio con lavamanos y pediluvio.',
+  f:[['Vestidores','Varones y damas por separado, con biombos que impiden ver desde las puertas'],['SS. HH.','Por vestidor: 1 ducha y 2 inodoros en cubículos cerrados'],['Personal de campaña','22: 2 supervisores + 20 operarios'],['Turnos','2 de 8 h, 10 operarios por turno'],['Normas','D.S. 007-98-SA (BPM) y Ley 29783 de Seguridad y Salud en el Trabajo']],
+  c:'9 permanentes + 22 de campaña = 31 personas',p:'El vestuario no conecta con el laboratorio ni con el caldero: nadie lo cruza para ir a otra área, y la ropa de calle nunca entra a la zona de proceso.'},
  cal:{t:'Caldero GLP y mantenimiento',z:'Servicios',d:'—',r:'Tanque de GLP que alimenta los quemadores del túnel y taller de mantenimiento.',
   f:[['Relación con secado','E: especialmente importante'],['Respaldo','Grupo electrógeno de 40 kW'],['Personal','2 técnicos de mantenimiento'],['GLP año 1','≈ 48 t']],
   c:null,p:'Tiene puerta propia al exterior: el GLP no entra por la zona de proceso.'},
@@ -147,11 +147,11 @@ const ZCOL={sucia:0x9FB3A4,limpia:0xDCD3BE,secado:0xBFA27E,serv:0xB4B8B3};
 const ZHEX={sucia:'#6F8A77',limpia:'#CFC3A6',secado:'#D9A766',serv:'#59625C'};
 // puertas internas [centro, ancho] sobre la pared compartida; sin puerta = muro; VENT = muro con ventana (sucia/limpia)
 const DOORS={'r1|r2':[6.2,3],'r2|r3':[6.2,3],'r3|r4':[6.2,3],'r4|r5':[6.2,3],'r5|r6':[14.2,3],'r6|r7':[14.2,3],'r7|r8':[14.2,3],
- 'of|r8':[4.5,1.8],'lab|of':[20.5,1.4],'lab|r7':[14.5,1.6],'lab|ves':[20.5,1.4],'r7|ves':[19.5,1.8],'cal|ves':[20.5,1.4]};
+ 'of|r8':[4.5,1.8],'lab|of':[20.5,1.4],'lab|r7':[14.5,1.6],'r7|ves':[19.5,1.8]};
 const VENT=new Set(['r1|r8','r2|r8','r2|r7','r3|r7','r4|r6']);
 const STATIONS=[['r1',5.2,5.3,.6],['r2',11,5.3,0],['r3',19.5,5.3,0],['r4',29.5,5.3,.45],['solar',46.5,10.6,0],['r5',35.6,15.6,-.15],
  ['r6',28,13.3,0],['r7',18,13.3,0],['r8',7,13.3,.3],['ext',3.5,-14,Math.PI],['lab',12.5,18.2,Math.PI],['of',5,18,2.36],
- ['ves',20,18,Math.PI],['cal',26.5,21.8,-.85],['res',36,22.8,0]];
+ ['ves',20,17,Math.PI],['cal',26.5,21.8,-.85],['res',36,22.8,0]];
 
 // ---------- Escena ----------
 const cv=document.getElementById('c');
@@ -197,7 +197,7 @@ for(let i=0;i<ROOMS.length;i++)for(let j=i+1;j<ROOMS.length;j++){const A=ROOMS[i
   if(Math.abs(p.x1-q.x0)<E){const lo=Math.max(p.z0,q.z0),hi=Math.min(p.z1,q.z1);if(hi-lo>.05)wall(false,p.x1,lo,hi,d,v)}
   if(Math.abs(p.z1-q.z0)<E){const lo=Math.max(p.x0,q.x0),hi=Math.min(p.x1,q.x1);if(hi-lo>.05)wall(true,p.z1,lo,hi,d,v)}}}
 wall(true,0,0,40,[[3.5,4],[30,2]]);            // norte: ingreso de camiones y salida de cáscara
-wall(true,25,0,40,[[4.5,1.8],[28,2],[36,2.5]]); // sur: oficinas, caldero, residuos
+wall(true,25,0,40,[[4.5,1.8],[17,1],[23,1],[28,2],[36,2.5]]); // sur: oficinas, ingreso de personal (varones y damas), caldero, residuos
 wall(false,0,0,25,[[12,3.5]]);                  // oeste: despacho
 wall(false,40,0,25,[[14.6,2.4]]);               // este: hacia el secador solar
 
@@ -307,8 +307,25 @@ table(6.8,22.8,1.8,1.0,.75,0xA88B64);
 B(12.5,24.25,6,.8,.9,0xF4F4F0);for(const [x,c] of[[10.2,0x2B3A33],[11.4,0xDADADA],[12.8,0x2B5F8A],[14.3,0x2B3A33]])B(x,24.2,.5,.4,.3,c,.9,false);
 B(9.95,16.7,.7,.7,1.8,0xF7F7F7);
 // vestuarios
-B(20,24.65,7,.45,1.9,0x6C8AA0);for(let x=16.75;x<23.5;x+=.5)box(x-.005,x+.005,24.42,24.43,.1,1.8,0x4A6578,false);
-B(23.6,17.7,.6,1.8,.9,0xF7F7F7);B(20,21.5,3,.4,.45,0xA88B64);
+// filtro sanitario: calle → vestidor (varones o damas) → pasillo limpio con lavamanos → envasado con pediluvio
+wall(true,18,16,24,[[19,1],[21,1]]);wall(false,20,18,25,[]);
+function biombo(x0,x1,z){box(x0,x1,z-.03,z+.03,.1,1.95,0xC9D3CB,false);COL.push([x0,x1,z-.03,z+.03])}
+// cubículo de SS. HH.: paneles de 2.1 m y puerta cerrada hacia el vestidor (la pared del fondo es el tabique central)
+function cubiculo(x0,x1,z0,z1,fx,tipo){const t=.05,cx=(x0+x1)/2,cz=(z0+z1)/2,sg=Math.sign(cx-fx);
+ box(x0,x1,z0-t/2,z0+t/2,0,2.1,0xD9DEDB,false);box(x0,x1,z1-t/2,z1+t/2,0,2.1,0xD9DEDB,false);
+ box(fx-t/2,fx+t/2,z0+.03,z1-.03,.15,2.1,0x6C8AA0,false);B(fx-sg*.05,cz+.35,.03,.14,.04,INOX,1.0,false);
+ if(tipo==='wc')B(cx+sg*.25,cz,.5,.38,.42,0xFAFAFA,0,false);
+ else{B(cx,cz,x1-x0-.1,z1-z0-.1,.02,0xBFD4DC,.01,false);cyl(cx+sg*.45,cz,.07,.12,INOX,1.95,false)}
+ COL.push([x0,x1,z0,z1])}
+function casilleros(x0,x1){box(x0,x1,19.5,22.5,0,1.9,0x6C8AA0);const fx=x0<20?x1+.005:x0-.005;
+ for(let z=19.75;z<22.5;z+=.5)box(fx-.004,fx+.004,z-.004,z+.004,.1,1.8,0x4A6578,false)}
+// vestidor de varones (oeste) y de damas (este), simétricos respecto del tabique x = 20
+casilleros(16.1,16.55);B(17.5,21,.4,2.4,.45,0xA88B64);biombo(18.0,19.9,19.1);biombo(16.2,17.9,23.9);
+cubiculo(18.6,20,21.0,22.3,18.6,'ducha');cubiculo(18.6,20,22.3,23.6,18.6,'wc');cubiculo(18.6,20,23.6,24.9,18.6,'wc');
+casilleros(23.45,23.9);B(22.5,21,.4,2.4,.45,0xA88B64);biombo(20.1,22.0,19.1);biombo(22.1,23.8,23.9);
+cubiculo(20,21.4,21.0,22.3,21.4,'ducha');cubiculo(20,21.4,22.3,23.6,21.4,'wc');cubiculo(20,21.4,23.6,24.9,21.4,'wc');
+// pasillo limpio: lavamanos con espejo antes de entrar al proceso
+B(22.5,16.4,2.0,.5,.9,0xF7F7F7);box(21.6,23.4,16.11,16.13,1.3,2.1,0xBFE3F2,false);
 // caldero GLP y mantenimiento
 cyl(30,18.5,.75,3.6,0xF2F2EE,.2,true,true);B(28.6,18.5,.15,1,.4,0x777777,0,false);B(31.4,18.5,.15,1,.4,0x777777,0,false);
 B(26,18,2,1,1.3,0x2F5D3A);B(25.5,24.35,2,.7,.9,0x7A6A55);
@@ -526,7 +543,7 @@ function logo(fg){const c=document.createElement('canvas');c.width=1400;c.height
 function calco(tx,x,y,z,ry,w){const p=new THREE.Mesh(new THREE.PlaneGeometry(w,w*400/1400),new THREE.MeshBasicMaterial({map:tx,transparent:true}));p.position.set(x,y,z);p.rotation.y=ry;S.add(p)}
 // letreros después de cargar las fuentes (si no hay internet, usan Arial)
 Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]).then(()=>{
- for(const r of ROOMS)label(SHORT[r.id],(r.num?r.num+' · ':'')+ZTXT[r.zona],(r.x0+r.x1)/2,3.5,r.id==='r5'?14.4:(r.z0+r.z1)/2,r.x1-r.x0<8?3.6:4.4);
+ for(const r of ROOMS)label(SHORT[r.id],(r.num?r.num+' · ':'')+ZTXT[r.zona],(r.x0+r.x1)/2,3.5,r.id==='r5'?14.4:r.id==='ves'?16.9:(r.z0+r.z1)/2,r.x1-r.x0<8?3.6:4.4);
  label('PCC 1 · humedad ≤ 18 %',null,37,3.3,12.9,3.4,'#13201A','rgba(240,160,48,.95)');
  label('PCC 2 · detector de metales',null,30.7,2.4,14.4,2.8,'#13201A','rgba(240,160,48,.95)');
  label('Acondicionado 24 h',null,26.5,2.35,9.2,2.6);
@@ -535,6 +552,8 @@ Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]).then(()=
  label('Descarte 7 %',null,17.2,1.2,7.3,1.4,'#F3EDE2','rgba(192,57,43,.95)');
  label('Contenedor 20\' a Paita',null,-5.6,4.1,12,3.6);
  label('Mango fresco · 9,000 kg/día',null,7.4,3.6,-7.2,3.6);
+ label('Varones',null,19,2.95,17.75,1.3);label('Damas',null,21,2.95,17.75,1.3);
+ label('Ingreso de personal',null,20,3.0,25.45,2.8);
  label('ING. JIMMY NICOLA','INGENIERO DE PLANTA',ING.x,2.35,ING.z,2.2);
  const oscuro=logo('#13201A'),claro=logo('#F3EDE2');
  calco(oscuro,6.185,1.75,-7.2,-PI/2,6.2);calco(oscuro,8.615,1.75,-7.2,PI/2,6.2);calco(oscuro,7.4,2.0,-3.585,0,2.2);
