@@ -1,0 +1,39 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* PEYEA animada: primero las cuatro dimensiones como flechas sobre los ejes, después su suma como vector */
+body{margin:0;background:transparent;overflow:hidden}
+text{font-family:'IBM Plex Mono',Consolas,monospace;font-size:22px;fill:#C9D3CB}
+.f{opacity:0;animation:o .35s forwards}@keyframes o{to{opacity:1}}
+.d{stroke-dasharray:var(--l);stroke-dashoffset:var(--l);animation:dr .5s cubic-bezier(.4,0,.2,1) forwards}@keyframes dr{to{stroke-dashoffset:0}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pu 1.6s 1.8s ease-out infinite;opacity:0}
+@keyframes pu{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(3)}}
+@media (prefers-reduced-motion:reduce){.f,.d,.pulse{animation:none;opacity:1;stroke-dashoffset:0}}
+</style></head><body>
+<svg id="s" width="620" height="620" viewBox="0 0 620 620"></svg>
+<script>
+const S=document.getElementById('s'),NS='http://www.w3.org/2000/svg',U=620/12,C=310;
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||S).appendChild(e);return e}
+function tx(x,y,s,a){const e=el('text',Object.assign({x,y},a||{}));e.textContent=s;return e}
+const X=v=>C+v*U,Y=v=>C-v*U;
+const defs=el('defs',{});
+[['am','#F0A030'],['ag','#C9D3CB']].forEach(([id,c])=>{const m=el('marker',{id,viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:4,markerHeight:4,orient:'auto'},defs);el('path',{d:'M0 0L10 5L0 10Z',fill:c},m)});
+el('rect',{x:0,y:0,width:620,height:620,fill:'#17251E'});
+const q=el('rect',{x:C,y:0,width:310,height:310,fill:'#F0A030','fill-opacity':.16,class:'f',style:'animation-delay:1.4s'});
+for(let v=-6;v<=6;v++){if(!v)continue;el('line',{x1:X(v),x2:X(v),y1:0,y2:620,stroke:'#22342B'});el('line',{y1:Y(v),y2:Y(v),x1:0,x2:620,stroke:'#22342B'})}
+function line(x1,y1,x2,y2,a,delay){const l=Math.hypot(x2-x1,y2-y1);return el('line',Object.assign({x1,y1,x2,y2,class:'d',style:`--l:${l};animation-delay:${delay}s`},a))}
+line(0,C,620,C,{stroke:'#8C978F','stroke-width':2},0);line(C,620,C,0,{stroke:'#8C978F','stroke-width':2},.15);
+[['Conservadora',18,36,'start'],['Agresiva',602,36,'end'],['Defensiva',18,602,'start'],['Competitiva',602,602,'end']].forEach(([s,x,y,a],i)=>tx(x,y,s,{'text-anchor':a,class:'f',style:`animation-delay:${.15+i*.04}s`,fill:s==='Agresiva'?'#F0A030':'#8C978F'}));
+// las cuatro dimensiones (promedios de la matriz)
+const D=[['FI +4.20',4.2,0,X(4.2),C-14,'middle'],['VC −2.60',-2.6,0,X(-2.6),C-14,'middle'],['FF +3.38',0,3.375,C+12,Y(3.375)+8,'start'],['EE −3.00',0,-3,C+12,Y(-3)+8,'start']];
+D.forEach(([s,dx,dy,lx,ly,a],i)=>{const d=.25+i*.12;line(C,C,X(dx),Y(dy),{stroke:'#C9D3CB','stroke-width':6,'marker-end':'url(#ag)'},d);tx(lx,ly,s,{'text-anchor':a,class:'f',style:`animation-delay:${d+.25}s`,fill:'#F3EDE2'})});
+// proyecciones del resultado
+const px=X(1.6),py=Y(.375);
+const proj={stroke:'#F0A030','stroke-width':2,'stroke-dasharray':'6 6',class:'f',style:'animation-delay:.85s'};
+el('line',Object.assign({x1:px,y1:C,x2:px,y2:py},proj));el('line',Object.assign({x1:C,y1:py,x2:px,y2:py},proj));
+tx(px,C+30,'X',{'text-anchor':'middle',class:'f',style:'animation-delay:.85s',fill:'#F0A030'});
+line(C,C,px,py,{stroke:'#F0A030','stroke-width':8,'stroke-linecap':'round','marker-end':'url(#am)'},.9);
+el('circle',{cx:px,cy:py,r:9,fill:'none',stroke:'#F0A030','stroke-width':3,class:'pulse'});
+el('circle',{cx:C,cy:C,r:7,fill:'#F3EDE2'});
+tx(px+18,py-22,'(1.60 ; 0.38)',{class:'f',style:'animation-delay:1.3s',fill:'#F0A030','font-weight':600});
+</script></body></html>

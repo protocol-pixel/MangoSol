@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MangoSol · Prefactibilidad de una planta de mango deshidratado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="lib/reveal.css">
+<style>
+html,body{background:#13201A}
+.reveal .slides{text-align:left}
+.reveal .slides section{padding:0;height:1080px}
+.reveal .slide{width:1920px;height:1080px;position:relative;box-sizing:border-box;text-align:left;font-size:32px;line-height:1.4;overflow:hidden}
+.reveal .slide *{box-sizing:border-box}
+.reveal .slide h1,.reveal .slide h2,.reveal .slide h3,.reveal .slide p,.reveal .slide ul{margin:0}
+.reveal .slide h1{line-height:1.1}.reveal .slide h2{line-height:1.15;text-wrap:balance}.reveal .slide h3{line-height:1.2}
+.reveal .slide ul{padding-left:1.1em;display:flex;flex-direction:column;gap:8px}
+.reveal .slide a{color:inherit;text-decoration:none}
+.reveal .slide table{border-collapse:collapse}
+.reveal .slide th,.reveal .slide td{padding:.35em .6em;border-bottom:1px solid rgba(140,151,143,.35);text-align:left;font-weight:400}
+.reveal .slide th{font-weight:600}
+.reveal .controls,.reveal .progress{color:#F0A030}
+.reveal .slide-number{background:rgba(19,32,26,.75);color:#E9E4D8;font-family:'IBM Plex Mono',monospace;font-size:16px}
+
+/* Entradas: cada elemento con data-build-in aparece en su orden cuando la diapositiva está activa */
+.reveal section .b{opacity:0}
+.reveal section.present .b{animation:var(--k) .45s cubic-bezier(.2,.8,.2,1) var(--d) both}
+.b-fade{--k:bFade}.b-rise{--k:bRise}.b-drop{--k:bDrop}.b-left{--k:bLeft}.b-right{--k:bRight}.b-scale{--k:bScale}.b-pop{--k:bPop}
+.b-growx{--k:bGrowX;transform-origin:left center}.b-growy{--k:bGrowY;transform-origin:center bottom}
+@keyframes bFade{from{opacity:0}to{opacity:1}}
+@keyframes bRise{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+@keyframes bDrop{from{opacity:0;transform:translateY(-40px)}to{opacity:1;transform:none}}
+@keyframes bLeft{from{opacity:0;transform:translateX(-60px)}to{opacity:1;transform:none}}
+@keyframes bRight{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:none}}
+@keyframes bScale{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes bPop{0%{opacity:0;transform:scale(.85)}70%{opacity:1;transform:scale(1.03)}100%{opacity:1;transform:none}}
+@keyframes bGrowX{from{opacity:1;transform:scaleX(0)}to{opacity:1;transform:none}}
+@keyframes bGrowY{from{opacity:1;transform:scaleY(0)}to{opacity:1;transform:none}}
+/* Trazos que se dibujan solos */
+.reveal section .draw{stroke-dasharray:var(--len,2000);stroke-dashoffset:var(--len,2000)}
+.reveal section.present .draw{transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1) var(--d,0s);stroke-dashoffset:0}
+@media (prefers-reduced-motion:reduce){.reveal section .b{opacity:1}.reveal section.present .b{animation:none}.reveal section .draw{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+<section id="cover" data-transition="fade">
+<div class="slide" style="background:#13201A;color:#E9E4D8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<svg aria-label="Mango cortado en láminas desplazadas" viewBox="0 0 720 720" width="720" height="720" style="position:absolute;left:1040px;top:180px;width:720px;height:720px" data-build-in="scale 1 auto"><defs><radialGradient id="mg" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="#FFC768"/><stop offset="0.45" stop-color="#F0A030"/><stop offset="0.85" stop-color="#C9650C"/><stop offset="1" stop-color="#9A4508"/></radialGradient><clipPath id="mc"><ellipse cx="360" cy="360" rx="290" ry="340"/></clipPath></defs><g transform="rotate(-14 360 360)"><g transform="translate(0,0)"><rect x="0" y="20" width="720" height="50" fill="url(#mg)" clip-path="url(#mc)"/></g><g transform="translate(14,0)"><rect x="0" y="82" width="720" height="50" fill="url(#mg)" clip-path="url(#mc)"/></g><g transform="translate(-10,0)"><rect x="0" y="144" width="720" height="50" fill="url(#mg)" clip-path="url(#mc)"/></g><g transform="translate(18,0)"><rect x="0" y="206" width="720" height="50" fill="url(#mg)" clip-path="url(#mc)"/></g><g transform="translate(-6,0)"><rect x="0" y="268" width="720" height="50" fill="url(#mg)" clip-path="url(#mc)"/></g><g transform="translate(12,0)"><rect x="0" y="330" width="720" height="50" fill="url(#mg)" clip-path="url(#mc)"/></g><g transform="translate(-16,0)"><rect x="0" y="392" width="720" height="50" fill="url(#mg)" clip-path="url(#mc)"/></g><g transform="translate(8,0)"><rect x="0" y="454" width="720" height="50" fill="url(#mg)" clip-path="url(#mc)"/></g><g transform="translate(-12,0)"><rect x="0" y="516" width="720" height="50" fill="url(#mg)" clip-path="url(#mc)"/></g><g transform="translate(16,0)"><rect x="0" y="578" width="720" height="50" fill="url(#mg)" clip-path="url(#mc)"/></g><g transform="translate(0,0)"><rect x="0" y="640" width="720" height="50" fill="url(#mg)" clip-path="url(#mc)"/></g></g></svg>
+<p style="position:absolute;left:128px;top:128px;width:1100px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#F0A030" data-build-in="fade 2 auto">UPAO · Ingeniería Industrial · Formulación y Evaluación de Proyectos</p>
+<h1 style="position:absolute;left:128px;top:300px;width:900px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:160px;font-weight:800;line-height:1.05;letter-spacing:-4px;color:#F3EDE2" data-build-in="rise 3 auto">MangoSol</h1>
+<p style="position:absolute;left:128px;top:500px;width:880px;font-size:44px;line-height:1.2;color:#E9E4D8" data-build-in="rise 4 auto">Planta procesadora de mango deshidratado para exportación en Sullana, Piura</p>
+<p style="position:absolute;left:128px;top:700px;width:880px;font-size:30px;line-height:1.4;color:#AEB9B0" data-build-in="fade 5 auto">Estudio de prefactibilidad · Avance parcial, secciones I a IV<br>Sol de Tambogrande S.A.C.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">Docente: Ing. Jimmy Franklin Nicola Abad, MSc. · Integrantes: [nombre 1] · [nombre 2] · [nombre 3] · [nombre 4] · Piura, 2026</p>
+</div>
+<aside class="notes">Presentar el proyecto en una frase: transformamos mango de Piura que no califica para exportarse fresco en láminas deshidratadas sin azúcar ni sulfitos, para importadores de México, EE. UU. y la UE. El dibujo del mango cortado en láminas representa justamente el producto. Aclarar desde el inicio que los datos de encuesta y de competidores son simulados con fines académicos; las cifras del sector (ADEX, DRAP Piura) son reales.</aside>
+</section>
+<section id="oportunidad" data-transition="fade">
+<div class="slide" style="background:#F3EDE2;color:#1D2A22;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#96490A">I · Resumen ejecutivo</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#13201A">La oportunidad en dos cifras</h2>
+<p class="count" style="position:absolute;left:128px;top:320px;width:800px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:140px;font-weight:800;line-height:1.05;letter-spacing:-3px;color:#13201A" data-build-in="rise 1 auto">535,407 t</p>
+<p style="position:absolute;left:128px;top:490px;width:760px;font-size:30px;line-height:1.4;color:#3D4A42" data-build-in="fade 2 auto">de mango produjo Piura en 2025, un 55.8 % más que el año anterior (DRAP Piura)</p>
+<div style="position:absolute;left:952px;top:330px;width:2px;height:260px;background:#CDBFA8"></div>
+<p class="count" style="position:absolute;left:1010px;top:320px;width:782px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:140px;font-weight:800;line-height:1.05;letter-spacing:-3px;color:#96490A" data-build-in="rise 3 auto">≈ 1,050 t</p>
+<p style="position:absolute;left:1010px;top:490px;width:760px;font-size:30px;line-height:1.4;color:#3D4A42" data-build-in="fade 4 auto">de mango deshidratado exporta todo el Perú en un año (US$ 8.4 M en 2023, CIEN-ADEX)</p>
+<p style="position:absolute;left:128px;top:690px;width:1540px;font-size:44px;line-height:1.25;color:#13201A" data-build-in="rise 5 auto">MangoSol convierte la fruta que no califica para exportarse en fresco en un snack <span style="color:#96490A">sin azúcar ni sulfitos</span> para importadores de México, EE. UU. y la Unión Europea.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">El problema: Piura produce muchísimo mango (535 mil toneladas en 2025, dato real de la Dirección Regional de Agricultura), pero una parte no califica para exportarse en fresco y se vende barata o se pierde. Al mismo tiempo, todo el Perú exporta apenas unas 1,050 toneladas de mango deshidratado al año. Esa cifra es una estimación nuestra: US$ 8.4 millones de ADEX divididos entre unos US$ 8 por kilo. La distancia entre las dos cifras es la oportunidad de agregar valor.</aside>
+</section>
+<section id="propuesta" data-transition="fade">
+<div class="slide" style="background:#13201A;color:#E9E4D8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#F0A030">I · Resumen ejecutivo</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3EDE2">El proyecto en seis cifras</h2>
+<div style="position:absolute;left:128px;top:300px;width:533px;background:#1C2B23;border-top:4px solid #F0A030;padding:36px 40px;display:flex;flex-direction:column;gap:8px" data-build-in="pop 1 auto"><p class="count" style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#F0A030">3,616 t</p><p style="font-size:30px;line-height:1.4;color:#C9D3CB">demanda insatisfecha al año</p></div>
+<div style="position:absolute;left:693px;top:300px;width:533px;background:#1C2B23;border-top:4px solid #F0A030;padding:36px 40px;display:flex;flex-direction:column;gap:8px" data-build-in="pop 2 auto"><p class="count" style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#F0A030">116.6 t</p><p style="font-size:30px;line-height:1.4;color:#C9D3CB">demanda objetivo del año 1</p></div>
+<div style="position:absolute;left:1258px;top:300px;width:533px;background:#1C2B23;border-top:4px solid #F0A030;padding:36px 40px;display:flex;flex-direction:column;gap:8px" data-build-in="pop 3 auto"><p class="count" style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#F0A030">155.7 t</p><p style="font-size:30px;line-height:1.4;color:#C9D3CB">capacidad instalada al año</p></div>
+<div style="position:absolute;left:128px;top:600px;width:533px;background:#1C2B23;border-top:4px solid #F0A030;padding:36px 40px;display:flex;flex-direction:column;gap:8px" data-build-in="pop 4 auto"><p class="count" style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#F0A030">US$ 8.50</p><p style="font-size:30px;line-height:1.4;color:#C9D3CB">precio FOB por kilo</p></div>
+<div style="position:absolute;left:693px;top:600px;width:533px;background:#1C2B23;border-top:4px solid #F0A030;padding:36px 40px;display:flex;flex-direction:column;gap:8px" data-build-in="pop 5 auto"><p style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#F0A030">Sullana</p><p style="font-size:30px;line-height:1.4;color:#C9D3CB">localización elegida (4.20 de 5)</p></div>
+<div style="position:absolute;left:1258px;top:600px;width:533px;background:#1C2B23;border-top:4px solid #F0A030;padding:36px 40px;display:flex;flex-direction:column;gap:8px" data-build-in="pop 6 auto"><p style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#F0A030">Agresiva</p><p style="font-size:30px;line-height:1.4;color:#C9D3CB">postura estratégica (PEYEA)</p></div>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">Este es el resumen de todo el avance; cada cifra se explica más adelante. Demanda insatisfecha: 4,665.6 t que pide el mercado efectivo menos 1,050 t que ofrece el Perú. Demanda objetivo: el 2.5 % del mercado efectivo. La capacidad es mayor que la demanda del año 1 porque se instala desde el inicio lo que se necesitará en el año 5 (estrategia proactiva). La conclusión preliminar es que el proyecto es viable en lo comercial y en lo técnico; la viabilidad económica se evalúa en el siguiente avance.</aside>
+</section>
+<section id="pestel" data-transition="slide">
+<div class="slide" style="background:#F3EDE2;color:#1D2A22;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#96490A">II · Macroentorno</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#13201A">PESTEL priorizado por impacto</h2>
+<table style="position:absolute;left:128px;top:290px;width:1664px;font-family:'IBM Plex Sans', Arial, sans-serif;font-size:26px;color:#1D2A22" data-build-in="fade 1 auto">
+<tr style="background:#13201A"><th style="width:16%;color:#F3EDE2">Factor</th><th style="width:40%;color:#F3EDE2">Cambio externo</th><th style="width:16%;color:#F3EDE2">Impacto · Prob.</th><th style="width:28%;color:#F3EDE2">Respuesta</th></tr>
+<tr><td>Político</td><td>TLC con EE. UU., la UE y México</td><td>Alto · Alta</td><td>Arancel 0 %; ferias PROMPERÚ</td></tr>
+<tr><td>Económico</td><td>Auge agroexportador; dólar volátil</td><td>Alto · Alta</td><td>Ventas y contratos en US$</td></tr>
+<tr style="background:#E6D9C2"><td>Social</td><td>Tendencia a snacks «clean label»</td><td>Alto · Alta</td><td>Sin azúcar ni sulfitos</td></tr>
+<tr><td>Tecnológico</td><td>Secado solar híbrido y control digital</td><td>Medio · Media</td><td>Presecado solar: menos GLP</td></tr>
+<tr style="background:#E6D9C2"><td>Ecológico</td><td>El Niño; exigencia de huella de carbono</td><td>Alto · Media</td><td>Proveedores en 3 valles</td></tr>
+<tr style="background:#E6D9C2"><td>Legal</td><td>FSMA (EE. UU.) y normas de la UE</td><td>Alto · Alta</td><td>HACCP y registro FDA</td></tr>
+</table>
+<div style="position:absolute;left:128px;top:720px;width:533px;background:#E9E1D2;padding:28px 32px;display:flex;flex-direction:column;gap:8px" data-build-in="rise 2 auto"><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#96490A">Oportunidad central</p><p style="font-size:30px;line-height:1.4;color:#13201A">Tendencia a snacks saludables (Social)</p></div>
+<div style="position:absolute;left:693px;top:720px;width:533px;background:#E9E1D2;padding:28px 32px;display:flex;flex-direction:column;gap:8px" data-build-in="rise 3 auto"><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#96490A">Condición de entrada</p><p style="font-size:30px;line-height:1.4;color:#13201A">Normas sanitarias FSMA y UE (Legal)</p></div>
+<div style="position:absolute;left:1258px;top:720px;width:533px;background:#E9E1D2;padding:28px 32px;display:flex;flex-direction:column;gap:8px" data-build-in="rise 4 auto"><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#96490A">Principal amenaza</p><p style="font-size:30px;line-height:1.4;color:#13201A">El Niño y el abastecimiento (Ecológico)</p></div>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">El profesor pide un PESTEL priorizado, no una lista. Cada factor se califica por impacto y probabilidad, y de ahí salen tres prioridades (las filas sombreadas): la tendencia saludable es la oportunidad que justifica el producto, las normas sanitarias son la condición para poder vender y El Niño es la amenaza que más preocupa porque reduce la floración del mango.</aside>
+</section>
+<section id="porter" data-transition="fade">
+<div class="slide" style="background:#13201A;color:#E9E4D8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#F0A030">II · Microentorno</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3EDE2">Cinco fuerzas: manda el cliente</h2>
+<p style="position:absolute;left:128px;top:300px;width:540px;font-size:30px;line-height:1.4;color:#C9D3CB" data-build-in="fade 6 auto">Sector atractivo pero exigente: hay que diferenciarse, no competir solo por precio.</p>
+<svg class="conn" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none"><defs><marker id="cn1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8C978F"/></marker></defs><line x1="960" y1="460" x2="960" y2="510" stroke="#8C978F" stroke-width="3" marker-end="url(#cn1)"/></svg>
+<svg class="conn" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none"><defs><marker id="cn2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8C978F"/></marker></defs><line x1="608" y1="600" x2="720" y2="600" stroke="#8C978F" stroke-width="3" marker-end="url(#cn2)"/></svg>
+<svg class="conn" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none"><defs><marker id="cn3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8C978F"/></marker></defs><line x1="1312" y1="600" x2="1200" y2="600" stroke="#8C978F" stroke-width="3" marker-end="url(#cn3)"/></svg>
+<svg class="conn" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none"><defs><marker id="cn4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8C978F"/></marker></defs><line x1="960" y1="740" x2="960" y2="690" stroke="#8C978F" stroke-width="3" marker-end="url(#cn4)"/></svg>
+<div style="position:absolute;left:720px;top:510px;width:480px;height:180px;background:#1C2B23;border:2px solid #F3EDE2;border-radius:8px;padding:22px 28px;display:flex;flex-direction:column;gap:4px" data-build-in="pop 1 auto"><h3 style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:32px;font-weight:700;color:#F3EDE2">Rivalidad</h3><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#F0A030">Intensidad media-alta</p><p style="font-size:24px;line-height:1.4;color:#C9D3CB">Perú, México, Burkina Faso</p></div>
+<div style="position:absolute;left:720px;top:280px;width:480px;height:180px;background:#1C2B23;border:1px solid #2E4237;border-radius:8px;padding:22px 28px;display:flex;flex-direction:column;gap:4px" data-build-in="fade 2 auto"><h3 style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:32px;font-weight:700;color:#F3EDE2">Nuevos entrantes</h3><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#F0A030">Intensidad media</p><p style="font-size:24px;line-height:1.4;color:#C9D3CB">Barrera: certificaciones</p></div>
+<div style="position:absolute;left:128px;top:510px;width:480px;height:180px;background:#1C2B23;border:1px solid #2E4237;border-radius:8px;padding:22px 28px;display:flex;flex-direction:column;gap:4px" data-build-in="fade 3 auto"><h3 style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:32px;font-weight:700;color:#F3EDE2">Proveedores</h3><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#F0A030">Intensidad baja-media</p><p style="font-size:24px;line-height:1.4;color:#C9D3CB">Miles de productores en Piura</p></div>
+<div style="position:absolute;left:1312px;top:510px;width:480px;height:180px;background:#F0A030;border-radius:8px;padding:22px 28px;display:flex;flex-direction:column;gap:4px" data-build-in="pop 4 auto"><h3 style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:32px;font-weight:700;color:#13201A">Clientes</h3><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#13201A">Intensidad alta</p><p style="font-size:24px;line-height:1.4;color:#13201A">Importadores comparan orígenes</p></div>
+<div style="position:absolute;left:720px;top:740px;width:480px;height:180px;background:#1C2B23;border:1px solid #2E4237;border-radius:8px;padding:22px 28px;display:flex;flex-direction:column;gap:4px" data-build-in="fade 5 auto"><h3 style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:32px;font-weight:700;color:#F3EDE2">Sustitutos</h3><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#F0A030">Intensidad media</p><p style="font-size:24px;line-height:1.4;color:#C9D3CB">Barras y frutos secos</p></div>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">Las cinco fuerzas miden qué tan atractivo es el sector. La fuerza más intensa es el poder de los clientes: son importadores con volumen que pueden comparar mango de Perú, México o Burkina Faso. Por eso la estrategia es diferenciarse (sin azúcar, trazable, clean label) en vez de pelear solo por precio. Los proveedores tienen poder bajo porque hay miles de productores, pero ese poder sube en un año El Niño.</aside>
+</section>
+<section id="mefe-mefi" data-transition="fade">
+<div class="slide" style="background:#F3EDE2;color:#1D2A22;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#96490A">II · Diagnóstico interno y externo</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#13201A">MEFE y MEFI: ambas sobre el promedio</h2>
+<p style="position:absolute;left:128px;top:300px;width:768px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#96490A">MEFE · factores externos</p>
+<p class="count" style="position:absolute;left:128px;top:340px;width:768px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:120px;font-weight:800;line-height:1.05;color:#13201A" data-build-in="rise 1 auto">2.76</p>
+<div style="position:absolute;left:128px;top:510px;width:768px;height:14px;background:#DCD0BA;border-radius:7px"></div>
+<div style="position:absolute;left:128px;top:510px;width:451px;height:14px;background:#C9650C;border-radius:7px" data-build-in="left 2 auto"></div>
+<div style="position:absolute;left:511px;top:494px;width:3px;height:46px;background:#13201A"></div>
+<p style="position:absolute;left:128px;top:548px;width:100px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">1.0</p>
+<p style="position:absolute;left:392px;top:548px;width:240px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">promedio 2.50</p>
+<p style="position:absolute;left:796px;top:548px;width:100px;text-align:right;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">4.0</p>
+<p style="position:absolute;left:128px;top:620px;width:768px;font-size:26px;line-height:1.5;color:#3D4A42" data-build-in="fade 3 auto"><b>Oportunidad de mayor peso:</b> demanda creciente de snacks saludables (0.12 × 4)<br><b>Amenaza de mayor peso:</b> El Niño (0.14 × 2)</p>
+<p style="position:absolute;left:1024px;top:300px;width:768px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#96490A">MEFI · factores internos</p>
+<p class="count" style="position:absolute;left:1024px;top:340px;width:768px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:120px;font-weight:800;line-height:1.05;color:#13201A" data-build-in="rise 4 auto">2.58</p>
+<div style="position:absolute;left:1024px;top:510px;width:768px;height:14px;background:#DCD0BA;border-radius:7px"></div>
+<div style="position:absolute;left:1024px;top:510px;width:405px;height:14px;background:#C9650C;border-radius:7px" data-build-in="left 5 auto"></div>
+<div style="position:absolute;left:1407px;top:494px;width:3px;height:46px;background:#13201A"></div>
+<p style="position:absolute;left:1024px;top:548px;width:100px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">1.0</p>
+<p style="position:absolute;left:1288px;top:548px;width:240px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">promedio 2.50</p>
+<p style="position:absolute;left:1692px;top:548px;width:100px;text-align:right;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">4.0</p>
+<p style="position:absolute;left:1024px;top:620px;width:768px;font-size:26px;line-height:1.5;color:#3D4A42" data-build-in="fade 6 auto"><b>Fortaleza de mayor peso:</b> planta a 35 km de Tambogrande (0.14 × 4)<br><b>Debilidad de mayor peso:</b> marca nueva, sin historial exportador (0.14 × 1)</p>
+<p style="position:absolute;left:128px;top:812px;width:1664px;font-size:30px;line-height:1.4;color:#13201A" data-build-in="fade 7 auto">Lectura: el proyecto aprovecha bien su entorno y tiene una posición interna ligeramente fuerte.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">Cada matriz tiene 10 factores con pesos que suman 1.00 y calificaciones de 1 a 4. El total ponderado se compara con 2.50, que es el promedio de la escala. La MEFE da 2.76: el proyecto responde bien a sus oportunidades y amenazas. La MEFI da 2.58: las fortalezas pesan un poco más que las debilidades. Las tablas completas están en el informe Word.</aside>
+</section>
+<section id="mpc" data-transition="fade">
+<div class="slide" style="background:#13201A;color:#E9E4D8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#F0A030">II · Matriz de perfil competitivo</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3EDE2">La brecha es la experiencia exportadora</h2>
+<p style="position:absolute;left:128px;top:311px;width:360px;font-size:30px;color:#C9D3CB">Competidor A</p>
+<div style="position:absolute;left:520px;top:300px;width:825px;height:64px;background:#3E5A4A;border-radius:4px" data-build-in="left 1 auto"></div>
+<p class="count" style="position:absolute;left:1365px;top:311px;width:160px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#F3EDE2">3.30</p>
+<p style="position:absolute;left:128px;top:411px;width:360px;font-size:30px;color:#C9D3CB">Competidor B</p>
+<div style="position:absolute;left:520px;top:400px;width:762px;height:64px;background:#3E5A4A;border-radius:4px" data-build-in="left 2 auto"></div>
+<p class="count" style="position:absolute;left:1302px;top:411px;width:160px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#F3EDE2">3.05</p>
+<p style="position:absolute;left:128px;top:511px;width:360px;font-size:30px;font-weight:600;color:#F0A030">MangoSol</p>
+<div style="position:absolute;left:520px;top:500px;width:675px;height:64px;background:#F0A030;border-radius:4px" data-build-in="left 3 auto"></div>
+<p class="count" style="position:absolute;left:1215px;top:511px;width:160px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#F0A030">2.70</p>
+<p style="position:absolute;left:128px;top:611px;width:360px;font-size:30px;color:#C9D3CB">Competidor C</p>
+<div style="position:absolute;left:520px;top:600px;width:487px;height:64px;background:#3E5A4A;border-radius:4px" data-build-in="left 4 auto"></div>
+<p class="count" style="position:absolute;left:1027px;top:611px;width:160px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#F3EDE2">1.95</p>
+<div style="position:absolute;left:128px;top:730px;width:816px;background:#1C2B23;padding:28px 32px;display:flex;flex-direction:column;gap:8px" data-build-in="rise 5 auto"><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#F0A030">Gana en</p><p style="font-size:30px;line-height:1.4;color:#F3EDE2">Acceso a materia prima (4) e innovación (4)</p></div>
+<div style="position:absolute;left:976px;top:730px;width:816px;background:#1C2B23;padding:28px 32px;display:flex;flex-direction:column;gap:8px" data-build-in="rise 6 auto"><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#F0A030">Pierde en</p><p style="font-size:30px;line-height:1.4;color:#F3EDE2">Experiencia exportadora (1) y certificaciones (2)</p></div>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">Puntaje ponderado sobre 4, con siete factores críticos de éxito cuyos pesos suman 1. El Competidor A (agroexportadora grande de Piura) lidera por experiencia y certificaciones. MangoSol queda tercero con 2.70, que es lo esperable para una empresa nueva; gana en acceso a materia prima porque la planta está cerca de Tambogrande y en innovación por el producto sin azúcar. Los competidores son simulados; para la entrega final se podrían reemplazar por empresas reales.</aside>
+</section>
+<section id="foda" data-transition="fade">
+<div class="slide" style="background:#F3EDE2;color:#1D2A22;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#96490A">II · FODA cruzado</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#13201A">Del diagnóstico a ocho estrategias</h2>
+<div style="position:absolute;left:128px;top:290px;width:800px;background:#13201A;padding:32px 40px;display:flex;flex-direction:column;gap:14px" data-build-in="pop 1 auto"><h3 style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:32px;font-weight:700;color:#F0A030">FO · Ofensivas</h3><ul style="font-size:26px;line-height:1.4;color:#E9E4D8"><li>Lanzar mango sin azúcar para el canal saludable (F3, O1)</li><li>Comprar mango de descarte en Tambogrande por contrato (F1, F4, O2)</li></ul></div>
+<div style="position:absolute;left:992px;top:290px;width:800px;background:#E9E1D2;border-top:6px solid #13201A;padding:32px 40px;display:flex;flex-direction:column;gap:14px" data-build-in="pop 2 auto"><h3 style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:32px;font-weight:700;color:#13201A">DO · De reorientación</h3><ul style="font-size:26px;line-height:1.4;color:#3D4A42"><li>Postular a Innóvate Perú o PROCOMPITE para el túnel (D2, O5)</li><li>Construir cartera en ferias de PROMPERÚ (D1, O5)</li></ul></div>
+<div style="position:absolute;left:128px;top:620px;width:800px;background:#E9E1D2;border-top:6px solid #13201A;padding:32px 40px;display:flex;flex-direction:column;gap:14px" data-build-in="pop 3 auto"><h3 style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:32px;font-weight:700;color:#13201A">FA · Defensivas</h3><ul style="font-size:26px;line-height:1.4;color:#3D4A42"><li>Proveedores en tres valles contra El Niño (F4, A1)</li><li>HACCP y registro FDA desde el inicio (F5, A3)</li></ul></div>
+<div style="position:absolute;left:992px;top:620px;width:800px;background:#E9E1D2;border-top:6px solid #13201A;padding:32px 40px;display:flex;flex-direction:column;gap:14px" data-build-in="pop 4 auto"><h3 style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:32px;font-weight:700;color:#13201A">DA · De supervivencia</h3><ul style="font-size:26px;line-height:1.4;color:#3D4A42"><li>Vender con la marca blanca del importador al inicio (D1, A2)</li><li>Contratos en US$ con precio por campaña (D2, A4)</li></ul></div>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">El profesor insiste en que el FODA sirve para generar estrategias, no para llenar casillas. Por eso cada estrategia cruza un factor interno con uno externo, y el código entre paréntesis dice cuáles: por ejemplo, F3 con O1 es el producto sin azúcar frente a la demanda de snacks saludables. Las ofensivas (FO) van resaltadas porque la PEYEA, en la siguiente diapositiva, recomienda una postura agresiva.</aside>
+</section>
+<section id="peyea" data-transition="fade">
+<div class="slide" style="background:#13201A;color:#E9E4D8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#F0A030">II · Matriz PEYEA</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3EDE2">PEYEA: postura agresiva</h2>
+<iframe class="anim" title="Matriz PEYEA animada: las cuatro dimensiones y el vector resultante" data-src="anim/peyea.html" scrolling="no" style="position:absolute;left:128px;top:290px;width:620px;height:620px;border:0;background:transparent"></iframe>
+<table style="position:absolute;left:860px;top:300px;width:932px;font-size:28px;color:#E9E4D8" data-build-in="fade 3 auto">
+<tr style="background:#1C2B23"><th style="width:70%;color:#F3EDE2">Dimensión</th><th style="width:30%;color:#F3EDE2;text-align:right">Promedio</th></tr>
+<tr><td>Fuerza financiera (FF)</td><td style="text-align:right">+3.38</td></tr>
+<tr><td>Ventaja competitiva (VC)</td><td style="text-align:right">−2.60</td></tr>
+<tr><td>Estabilidad del entorno (EE)</td><td style="text-align:right">−3.00</td></tr>
+<tr><td>Fuerza de la industria (FI)</td><td style="text-align:right">+4.20</td></tr>
+</table>
+<p style="position:absolute;left:860px;top:630px;width:932px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;line-height:1.4;color:#F0A030" data-build-in="fade 4 auto">X = FI + VC = +1.60<br>Y = FF + EE = +0.38</p>
+<p style="position:absolute;left:860px;top:740px;width:932px;font-size:30px;line-height:1.4;color:#E9E4D8" data-build-in="fade 5 auto"><b>Estrategias:</b> penetración de mercado, desarrollo de producto e integración hacia atrás.</p>
+<p style="position:absolute;left:860px;top:846px;width:932px;font-size:30px;line-height:1.4;color:#C9D3CB" data-build-in="fade 6 auto"><b>Alerta:</b> el vector roza el eje X por El Niño.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">La PEYEA ubica al proyecto en un plano con cuatro dimensiones. El eje X suma la fuerza de la industria y la ventaja competitiva; el eje Y suma la fuerza financiera y la estabilidad del entorno. El vector cae en el cuadrante agresivo, que recomienda crecer. Pero cae muy cerca del eje X porque el entorno es inestable (El Niño pesa −5): si el clima empeora, el proyecto pasaría a la postura competitiva. Por eso la diversificación de proveedores es clave.</aside>
+</section>
+<section id="vision" data-transition="fade">
+<div class="slide" style="background:#F0A030;color:#13201A;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#13201A">II · Visión, misión y objetivos</p>
+<p style="position:absolute;left:128px;top:200px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#13201A" data-build-in="rise 1 auto">Al 2031, ser la marca peruana de mango deshidratado sin azúcar de referencia para los importadores de snacks saludables de Norteamérica y Europa.</p>
+<p style="position:absolute;left:128px;top:580px;width:1600px;font-size:30px;line-height:1.4;color:#13201A" data-build-in="fade 2 auto"><b>Misión:</b> transformar el mango de Piura en un snack natural, seguro y de etiqueta limpia, que genere valor para los clientes, empleo en la región y precios justos para los productores.</p>
+<div style="position:absolute;left:128px;top:720px;width:533px;border-top:3px solid #13201A;padding:16px 0 0 0;display:flex;flex-direction:column;gap:4px" data-build-in="rise 3 auto"><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#13201A">Mercado</p><p class="count" style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:44px;font-weight:700;color:#13201A">≥ 8 importadores</p><p style="font-size:24px;color:#13201A">activos en el año 1</p></div>
+<div style="position:absolute;left:693px;top:720px;width:533px;border-top:3px solid #13201A;padding:16px 0 0 0;display:flex;flex-direction:column;gap:4px" data-build-in="rise 4 auto"><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#13201A">Abastecimiento</p><p class="count" style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:44px;font-weight:700;color:#13201A">≥ 70 %</p><p style="font-size:24px;color:#13201A">del mango comprado por contrato</p></div>
+<div style="position:absolute;left:1258px;top:720px;width:533px;border-top:3px solid #13201A;padding:16px 0 0 0;display:flex;flex-direction:column;gap:4px" data-build-in="rise 5 auto"><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#13201A">Ventas</p><p class="count" style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:44px;font-weight:700;color:#13201A">US$ 991 mil</p><p style="font-size:24px;color:#13201A">en el año 1 (116.6 t × US$ 8.50)</p></div>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#13201A">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">La visión dice a dónde queremos llegar (2031, el último año del horizonte de evaluación) y la misión dice qué hacemos todos los días. Los objetivos son medibles: 8 importadores sale del embudo de mercado (el 2.5 % de 324), y las ventas del año 1 son la demanda objetivo por el precio FOB. En el informe también hay objetivos de certificación (HACCP en el año 1, BRCGS u orgánica en el año 3) y de rentabilidad.</aside>
+</section>
+<section id="adex" data-transition="fade">
+<div class="slide" style="background:#13201A;color:#E9E4D8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#F0A030">III · Oferta · dato real</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3EDE2">Lo que hoy exporta el Perú</h2>
+<p class="count" style="position:absolute;left:128px;top:290px;width:800px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:140px;font-weight:800;line-height:1.05;letter-spacing:-3px;color:#F0A030" data-build-in="rise 1 auto">US$ 8.4 M</p>
+<p style="position:absolute;left:128px;top:460px;width:780px;font-size:30px;line-height:1.4;color:#C9D3CB" data-build-in="fade 2 auto">en mango deshidratado durante 2023 (valor FOB)</p>
+<p class="count" style="position:absolute;left:128px;top:560px;width:780px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#F3EDE2" data-build-in="rise 3 auto">+9.1 %</p>
+<p style="position:absolute;left:128px;top:650px;width:780px;font-size:30px;line-height:1.4;color:#C9D3CB" data-build-in="fade 3 auto">frente a 2022, a pesar de El Niño</p>
+<p class="count" style="position:absolute;left:128px;top:740px;width:780px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#F3EDE2" data-build-in="rise 4 auto">≈ 1,050 t</p>
+<p style="position:absolute;left:128px;top:830px;width:780px;font-size:30px;line-height:1.4;color:#C9D3CB" data-build-in="fade 4 auto">al año, estimado con ~US$ 8 por kilo</p>
+<p style="position:absolute;left:1000px;top:300px;width:792px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">Destinos en 2023 · % del valor FOB</p>
+<p style="position:absolute;left:1000px;top:370px;width:400px;font-size:30px;color:#F3EDE2">México</p>
+<p style="position:absolute;left:1392px;top:370px;width:400px;text-align:right;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#F0A030">45.2 % · US$ 3.8 M</p>
+<div style="position:absolute;left:1000px;top:420px;width:792px;height:32px;background:#F0A030;border-radius:4px" data-build-in="left 5 auto"></div>
+<p style="position:absolute;left:1000px;top:480px;width:400px;font-size:30px;color:#F3EDE2">Estados Unidos</p>
+<p style="position:absolute;left:1392px;top:480px;width:400px;text-align:right;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#C9D3CB">19.8 % · US$ 1.7 M</p>
+<div style="position:absolute;left:1000px;top:530px;width:347px;height:32px;background:#3E5A4A;border-radius:4px" data-build-in="left 6 auto"></div>
+<p style="position:absolute;left:1000px;top:590px;width:400px;font-size:30px;color:#F3EDE2">Alemania</p>
+<p style="position:absolute;left:1392px;top:590px;width:400px;text-align:right;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#C9D3CB">16.4 % · US$ 1.4 M</p>
+<div style="position:absolute;left:1000px;top:640px;width:287px;height:32px;background:#3E5A4A;border-radius:4px" data-build-in="left 7 auto"></div>
+<p style="position:absolute;left:1000px;top:700px;width:400px;font-size:30px;color:#F3EDE2">Otros</p>
+<p style="position:absolute;left:1392px;top:700px;width:400px;text-align:right;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#C9D3CB">18.6 % · US$ 1.5 M</p>
+<div style="position:absolute;left:1000px;top:750px;width:326px;height:32px;background:#3E5A4A;border-radius:4px" data-build-in="left 8 auto"></div>
+<p style="position:absolute;left:128px;bottom:64px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">Fuente: CIEN-ADEX (2025), Nota de coyuntura: mango, con datos de SUNAT</p>
+</div>
+<aside class="notes">Esta diapositiva usa datos reales de ADEX, no simulados. El Perú exportó US$ 8.4 millones de mango deshidratado en 2023, 9 % más que en 2022 aunque El Niño golpeó la campaña. México es el primer comprador (45 %), por eso entra en nuestra segmentación. Las 1,050 toneladas son una estimación: dividimos el valor entre un precio promedio de unos US$ 8 por kilo. Importante: corregimos los porcentajes que daba Gemini (40.8 / 29.7 / 18.6), que estaban mal atribuidos.</aside>
+</section>
+<section id="embudo" data-transition="fade" data-auto-animate>
+<div class="slide" style="background:#F3EDE2;color:#1D2A22;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#96490A">III · Análisis de mercado</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#13201A">Del mercado potencial a la demanda objetivo</h2>
+<div style="position:absolute;left:164px;top:290px;width:1100px;height:90px;background:#13201A;display:flex;align-items:center;justify-content:center" data-build-in="rise 1 auto"><p class="count" style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#F3EDE2">1,200 importadores · potencial</p></div>
+<div style="position:absolute;left:284px;top:400px;width:860px;height:90px;background:#2C4236;display:flex;align-items:center;justify-content:center" data-build-in="rise 2 auto"><p class="count" style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#F3EDE2">720 · disponible</p></div>
+<div style="position:absolute;left:404px;top:510px;width:620px;height:90px;background:#3E5A4A;display:flex;align-items:center;justify-content:center" data-build-in="rise 3 auto"><p class="count" style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#F3EDE2">324 · efectivo</p></div>
+<div style="position:absolute;left:524px;top:620px;width:380px;height:90px;background:#F0A030;display:flex;align-items:center;justify-content:center" data-build-in="rise 4 auto"><p class="count" style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#13201A">8.1 · objetivo</p></div>
+<p style="position:absolute;left:1340px;top:296px;width:452px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.4;color:#59625B">Muestra: n = 292 (N = 1,200; Z = 1.96; e = 5 %)</p>
+<p style="position:absolute;left:1340px;top:420px;width:452px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.4;color:#13201A" data-build-in="fade 2 auto">× 0.60 · compran a Latinoamérica</p>
+<p style="position:absolute;left:1340px;top:530px;width:452px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.4;color:#13201A" data-build-in="fade 3 auto">× 0.45 · intención de compra</p>
+<p style="position:absolute;left:1340px;top:640px;width:452px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.4;color:#96490A" data-build-in="fade 4 auto">× 0.025 · cuota del proyecto</p>
+<p data-id="mg-dem" style="position:absolute;left:128px;top:750px;width:600px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:120px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#96490A" data-build-in="pop 5 auto">116.6 t</p>
+<p style="position:absolute;left:720px;top:780px;width:1072px;font-size:30px;line-height:1.4;color:#3D4A42" data-build-in="fade 6 auto">8.1 importadores × 1.2 t al mes × 12 meses = demanda objetivo del año 1</p>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">Es el embudo del profesor: potencial, disponible, efectivo y objetivo. Partimos de 1,200 importadores de fruta deshidratada en EE. UU., México y la UE. El 60 % compra a Latinoamérica y exige certificaciones que podemos cumplir; de esos, el 45 % declaró intención de compra en la encuesta (simulada). El proyecto decide atender el 2.5 %: unos 8 importadores que compran 1.2 t al mes cada uno, o sea 116.6 t en el año 1. La muestra de 292 sale de la fórmula para población finita.</aside>
+</section>
+<section id="brecha" data-transition="fade" data-auto-animate>
+<div class="slide" style="background:#F3EDE2;color:#1D2A22;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#96490A">III · Demanda insatisfecha</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#13201A">Hay mercado sin atender</h2>
+<p style="position:absolute;left:128px;top:290px;width:1664px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:44px;color:#13201A" data-build-in="fade 1 auto">DI = D − O = 4,665.6 − 1,050 = 3,615.6 t/año</p>
+<p style="position:absolute;left:128px;top:396px;width:420px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">Oferta · 1,050 t</p>
+<p style="position:absolute;left:560px;top:396px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#13201A">Demanda insatisfecha · 3,615.6 t</p>
+<div style="position:absolute;left:128px;top:440px;width:375px;height:120px;background:#8C978F" data-build-in="left 2 auto"></div>
+<div style="position:absolute;left:503px;top:440px;width:1289px;height:120px;background:#13201A" data-build-in="left 3 auto"></div>
+<div style="position:absolute;left:503px;top:440px;width:42px;height:120px;background:#F0A030" data-build-in="pop 4 auto"></div>
+<p style="position:absolute;left:1192px;top:576px;width:600px;text-align:right;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">Mercado efectivo: 4,665.6 t al año</p>
+<svg class="conn" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none"><line x1="524" y1="560" x2="524" y2="612" stroke="#C9650C" stroke-width="3"/></svg>
+<p data-id="mg-dem" style="position:absolute;left:503px;top:612px;width:600px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:120px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#96490A">116.6 t</p>
+<p style="position:absolute;left:503px;top:752px;width:1100px;font-size:30px;line-height:1.4;color:#13201A" data-build-in="fade 5 auto">es lo que atiende MangoSol en el año 1: el 3.2 % de la brecha.</p>
+<p style="position:absolute;left:503px;top:820px;width:1289px;font-size:30px;line-height:1.4;color:#3D4A42" data-build-in="fade 6 auto">No necesita quitarle clientes a la competencia para vender.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">La demanda insatisfecha es la demanda del mercado efectivo menos lo que ya se ofrece. El mercado efectivo pide 4,665.6 t al año (324 importadores por 14.4 t cada uno) y el Perú ofrece unas 1,050 t. Quedan 3,615.6 t sin atender. Nuestra meta del año 1 es apenas el 3.2 % de esa brecha, pero equivale a cerca del 11 % de lo que exporta todo el país: es exigente, aunque defendible. Al principio usábamos una cuota del 5 % y la bajamos al 2.5 % justamente por esta comparación con ADEX.</aside>
+</section>
+<section id="precio" data-transition="fade">
+<div class="slide" style="background:#13201A;color:#E9E4D8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#F0A030">III · Producto y precio</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3EDE2">Precio de penetración: US$ 8.50/kg</h2>
+<p style="position:absolute;left:128px;top:300px;width:800px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">US$ por kilo, FOB Paita</p>
+<div style="position:absolute;left:594px;top:420px;width:725px;height:180px;background:#1C2B23" data-build-in="fade 1 auto"></div>
+<div style="position:absolute;left:228px;top:600px;width:1464px;height:3px;background:#8C978F"></div>
+<div style="position:absolute;left:188px;top:616px;width:1544px;display:flex;justify-content:space-between"><p style="width:80px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">7.50</p><p style="width:80px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">8.00</p><p style="width:80px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">8.50</p><p style="width:80px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">9.00</p><p style="width:80px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">9.50</p></div>
+<p style="position:absolute;left:594px;top:664px;width:725px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#C9D3CB" data-build-in="fade 1 auto">rango más aceptado en la encuesta (52 %)</p>
+<div style="position:absolute;left:436px;top:589px;width:24px;height:24px;border-radius:50%;background:#C9D3CB" data-build-in="pop 2 auto"></div>
+<p style="position:absolute;left:388px;top:540px;width:120px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#C9D3CB" data-build-in="fade 2 auto">C · 7.80</p>
+<div style="position:absolute;left:1021px;top:589px;width:24px;height:24px;border-radius:50%;background:#C9D3CB" data-build-in="pop 3 auto"></div>
+<p style="position:absolute;left:1045px;top:540px;width:130px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#C9D3CB" data-build-in="fade 3 auto">B · 8.60</p>
+<div style="position:absolute;left:1240px;top:589px;width:24px;height:24px;border-radius:50%;background:#C9D3CB" data-build-in="pop 4 auto"></div>
+<p style="position:absolute;left:1192px;top:540px;width:120px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#C9D3CB" data-build-in="fade 4 auto">A · 8.90</p>
+<div style="position:absolute;left:958px;top:466px;width:4px;height:134px;background:#F0A030" data-build-in="rise 5 auto"></div>
+<div style="position:absolute;left:944px;top:585px;width:32px;height:32px;border-radius:50%;background:#F0A030" data-build-in="pop 5 auto"></div>
+<p style="position:absolute;left:540px;top:452px;width:400px;text-align:right;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:44px;font-weight:700;color:#F0A030" data-build-in="fade 5 auto">MangoSol · 8.50</p>
+<div style="position:absolute;left:128px;top:760px;width:533px;background:#1C2B23;padding:24px 32px" data-build-in="rise 6 auto"><p style="font-size:26px;line-height:1.4;color:#F3EDE2">Láminas de 6–8 mm, 15–18 % de humedad, 12 meses de vida útil</p></div>
+<div style="position:absolute;left:693px;top:760px;width:533px;background:#1C2B23;padding:24px 32px" data-build-in="rise 7 auto"><p style="font-size:26px;line-height:1.4;color:#F3EDE2">Sin azúcar ni sulfitos: el atributo más valorado (34 %)</p></div>
+<div style="position:absolute;left:1258px;top:760px;width:533px;background:#1C2B23;padding:24px 32px" data-build-in="rise 8 auto"><p style="font-size:26px;line-height:1.4;color:#F3EDE2">Caja de 10 kg (58 %) y doypack con marca blanca</p></div>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">El precio de US$ 8.50 por kilo FOB está por debajo de los competidores formales A (8.90) y B (8.60) y dentro del rango que más aceptan los importadores encuestados (8.00 a 8.99). Es un precio de penetración: entramos un poco más barato para ganar los primeros clientes, porque somos una marca nueva. El Competidor C es más barato, pero es artesanal y sin certificaciones. Los precios de la competencia son simulados.</aside>
+</section>
+<section id="cuatro-p" data-transition="fade">
+<div class="slide" style="background:#F3EDE2;color:#1D2A22;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#96490A">III · Estrategia comercial</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#13201A">Las 4P de MangoSol</h2>
+<div style="position:absolute;left:128px;top:300px;width:392px;background:#E9E1D2;border-top:6px solid #13201A;padding:32px;display:flex;flex-direction:column;gap:16px" data-build-in="rise 1 auto"><h3 style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:44px;font-weight:700;color:#13201A">Producto</h3><p style="font-size:26px;line-height:1.4;color:#3D4A42">Mango sin azúcar a granel (10 kg) y doypack con marca blanca. Desde el año 3, mango con chile y mix tropical.</p></div>
+<div style="position:absolute;left:552px;top:300px;width:392px;background:#E9E1D2;border-top:6px solid #13201A;padding:32px;display:flex;flex-direction:column;gap:16px" data-build-in="rise 2 auto"><h3 style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:44px;font-weight:700;color:#13201A">Precio</h3><p style="font-size:26px;line-height:1.4;color:#3D4A42">US$ 8.50/kg FOB. Descuentos en pedidos de más de 3 t y contratos por campaña en dólares.</p></div>
+<div style="position:absolute;left:976px;top:300px;width:392px;background:#E9E1D2;border-top:6px solid #13201A;padding:32px;display:flex;flex-direction:column;gap:16px" data-build-in="rise 3 auto"><h3 style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:44px;font-weight:700;color:#13201A">Plaza</h3><p style="font-size:26px;line-height:1.4;color:#3D4A42">Exportación directa por Paita en contenedor de 20 pies (≈ 10 t), hacia el importador y de ahí al retail o la industria.</p></div>
+<div style="position:absolute;left:1400px;top:300px;width:392px;background:#E9E1D2;border-top:6px solid #13201A;padding:32px;display:flex;flex-direction:column;gap:16px" data-build-in="rise 4 auto"><h3 style="font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:44px;font-weight:700;color:#13201A">Promoción</h3><p style="font-size:26px;line-height:1.4;color:#3D4A42">Ferias con PROMPERÚ (Expoalimentaria, Summer Fancy Food, BIOFACH), muestras, web y LinkedIn en inglés.</p></div>
+<p style="position:absolute;left:128px;top:760px;width:1664px;font-size:44px;line-height:1.25;color:#13201A" data-build-in="fade 5 auto">Competimos por <span style="color:#96490A">etiqueta limpia y trazabilidad</span>, no por el precio más bajo.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">La mezcla de marketing es coherente con lo anterior: producto diferenciado, precio de penetración, exportación directa (sin intermediarios peruanos, para no ceder margen) y promoción en ferias, que es como se consiguen importadores en el sector. La marca blanca al inicio es una estrategia DA del FODA: como somos una marca nueva, primero vendemos con la marca del importador.</aside>
+</section>
+<section id="localizacion" data-transition="slide">
+<div class="slide" style="background:#13201A;color:#E9E4D8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#F0A030">IV · Análisis técnico · localización</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3EDE2">Sullana, entre los huertos y el puerto</h2>
+<svg class="conn" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none"><line x1="314" y1="420" x2="936" y2="420" stroke="#8C978F" stroke-width="4" stroke-dasharray="14 10"/></svg>
+<svg class="conn" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none"><defs><marker id="cn7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8C978F"/></marker></defs><line x1="984" y1="420" x2="1606" y2="420" stroke="#8C978F" stroke-width="4" stroke-dasharray="14 10" marker-end="url(#cn7)"/></svg>
+<p style="position:absolute;left:425px;top:360px;width:400px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#C9D3CB" data-build-in="fade 2 auto">≈ 35 km de fruta</p>
+<p style="position:absolute;left:1095px;top:360px;width:400px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#C9D3CB" data-build-in="fade 3 auto">≈ 60 km de producto</p>
+<div style="position:absolute;left:286px;top:406px;width:28px;height:28px;border-radius:50%;background:#C9D3CB" data-build-in="pop 1 auto"></div>
+<div style="position:absolute;left:936px;top:396px;width:48px;height:48px;border-radius:50%;background:#F0A030" data-build-in="pop 2 auto"></div>
+<div style="position:absolute;left:1606px;top:406px;width:28px;height:28px;border-radius:50%;background:#C9D3CB" data-build-in="pop 3 auto"></div>
+<p style="position:absolute;left:100px;top:466px;width:400px;text-align:center;font-size:30px;line-height:1.4;color:#F3EDE2" data-build-in="fade 1 auto"><b>Tambogrande</b><br><span style="color:#AEB9B0">huertos de mango</span></p>
+<p style="position:absolute;left:760px;top:466px;width:400px;text-align:center;font-size:30px;line-height:1.4;color:#F0A030" data-build-in="fade 2 auto"><b>Sullana</b><br><span style="color:#AEB9B0">planta</span></p>
+<p style="position:absolute;left:1420px;top:466px;width:400px;text-align:center;font-size:30px;line-height:1.4;color:#F3EDE2" data-build-in="fade 3 auto"><b>Paita</b><br><span style="color:#AEB9B0">puerto de exportación</span></p>
+<div style="position:absolute;left:128px;top:600px;width:768px;display:flex;flex-direction:column;gap:14px" data-build-in="rise 4 auto"><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">Microlocalización · puntaje sobre 5</p><div style="display:flex;align-items:center;gap:16px"><p style="width:260px;font-size:30px;font-weight:600;color:#F0A030">Sullana</p><div style="width:336px;height:30px;background:#F0A030;border-radius:4px"></div><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#F0A030">4.20</p></div><div style="display:flex;align-items:center;gap:16px"><p style="width:260px;font-size:30px;color:#F3EDE2">Tambogrande</p><div style="width:308px;height:30px;background:#3E5A4A;border-radius:4px"></div><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#C9D3CB">3.85</p></div><div style="display:flex;align-items:center;gap:16px"><p style="width:260px;font-size:30px;color:#F3EDE2">Piura (Castilla)</p><div style="width:300px;height:30px;background:#3E5A4A;border-radius:4px"></div><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#C9D3CB">3.75</p></div></div>
+<div style="position:absolute;left:1024px;top:600px;width:768px;display:flex;flex-direction:column;gap:14px" data-build-in="rise 5 auto"><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">Macrolocalización · puntaje sobre 5</p><div style="display:flex;align-items:center;gap:16px"><p style="width:260px;font-size:30px;font-weight:600;color:#F0A030">Piura</p><div style="width:360px;height:30px;background:#F0A030;border-radius:4px"></div><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#F0A030">4.50</p></div><div style="display:flex;align-items:center;gap:16px"><p style="width:260px;font-size:30px;color:#F3EDE2">Lambayeque</p><div style="width:296px;height:30px;background:#3E5A4A;border-radius:4px"></div><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#C9D3CB">3.70</p></div><div style="display:flex;align-items:center;gap:16px"><p style="width:260px;font-size:30px;color:#F3EDE2">Áncash</p><div style="width:248px;height:30px;background:#3E5A4A;border-radius:4px"></div><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;color:#C9D3CB">3.10</p></div></div>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">Usamos el método de factores ponderados con escala de 1 a 5. Primero la macrolocalización: Piura gana (4.50) por materia prima y cercanía al puerto. Luego la microlocalización entre tres distritos: Sullana gana con 4.20. Tambogrande tiene más fruta, pero peores servicios (agua, energía trifásica) y está más lejos de Paita; Piura (Castilla) tiene mejores servicios, pero el terreno es caro y está lejos de los huertos. Sullana equilibra los tres factores.</aside>
+</section>
+<section id="flujograma" data-transition="fade">
+<div class="slide" style="background:#13201A;color:#E9E4D8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#F0A030">IV · Proceso productivo</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3EDE2">Flujograma: once etapas en U</h2>
+<iframe class="anim" title="Flujograma animado: lotes de mango recorren las once etapas del proceso" data-src="anim/flujo.html" scrolling="no" style="position:absolute;left:128px;top:270px;width:1664px;height:530px;border:0;background:transparent"></iframe>
+<p style="position:absolute;left:128px;top:812px;width:1664px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.4;color:#C9D3CB" data-build-in="fade 13 auto">Resumen del DOP: 5 operaciones · 2 inspecciones · 1 combinada · 1 espera · 1 almacenamiento · 1 transporte</p>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">Es el diagrama de operaciones del proceso con los símbolos ASME que se usan en ingeniería industrial: círculo para operación, cuadrado para inspección, círculo dentro de cuadrado para la operación combinada (recibir y pesar a la vez), la D para una espera, el triángulo invertido para almacenamiento y la flecha para transporte. Los kilos son de un día de campaña. Hay dos puntos críticos de control del HACCP: el secado (la humedad final debe quedar en 18 % o menos) y el detector de metales. Cada círculo naranja que avanza es un lote de mango: se encoge según el balance de materia, suelta partículas grises en las mermas y vapor en el secado.</aside>
+</section>
+<section id="balance" data-transition="fade">
+<div class="slide" style="background:#F3EDE2;color:#1D2A22;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#96490A">IV · Proceso · base de un día</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#13201A">Balance de materia: entran 9 t, salen 998 kg</h2>
+<p style="position:absolute;left:128px;top:301px;width:380px;font-size:30px;color:#13201A">Recepción</p>
+<div style="position:absolute;left:520px;top:290px;width:1000px;height:64px;background:#13201A;border-radius:4px" data-build-in="left 1 auto"></div>
+<p style="position:absolute;left:1540px;top:303px;width:252px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;color:#13201A">9,000 kg</p>
+<p style="position:absolute;left:128px;top:395px;width:380px;font-size:30px;color:#13201A">Selección</p>
+<div style="position:absolute;left:520px;top:384px;width:930px;height:64px;background:#13201A;border-radius:4px" data-build-in="left 2 auto"></div>
+<p style="position:absolute;left:1470px;top:397px;width:322px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;color:#13201A">8,370 kg · −630</p>
+<p style="position:absolute;left:128px;top:489px;width:380px;font-size:30px;color:#13201A">Pelado y despepado</p>
+<div style="position:absolute;left:520px;top:478px;width:577px;height:64px;background:#13201A;border-radius:4px" data-build-in="left 3 auto"></div>
+<p style="position:absolute;left:1117px;top:491px;width:675px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;color:#13201A">5,189 kg · −3,181 cáscara y pepa</p>
+<p style="position:absolute;left:128px;top:583px;width:380px;font-size:30px;color:#13201A">Recorte</p>
+<div style="position:absolute;left:520px;top:572px;width:565px;height:64px;background:#13201A;border-radius:4px" data-build-in="left 4 auto"></div>
+<p style="position:absolute;left:1105px;top:585px;width:687px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;color:#13201A">5,086 kg · −104</p>
+<p style="position:absolute;left:128px;top:677px;width:380px;font-size:30px;font-weight:600;color:#96490A">Secado 83 → 16 %</p>
+<div style="position:absolute;left:520px;top:666px;width:114px;height:64px;background:#F0A030;border-radius:4px" data-build-in="left 5 auto"></div>
+<p style="position:absolute;left:654px;top:679px;width:1138px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;color:#96490A">1,029 kg · −4,056 kg de agua evaporada</p>
+<p style="position:absolute;left:128px;top:771px;width:380px;font-size:30px;font-weight:600;color:#96490A">Selección final</p>
+<div style="position:absolute;left:520px;top:760px;width:111px;height:64px;background:#F0A030;border-radius:4px" data-build-in="left 6 auto"></div>
+<p style="position:absolute;left:651px;top:773px;width:1141px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;color:#96490A">998 kg de producto · −31</p>
+<p style="position:absolute;left:128px;top:856px;width:1664px;font-size:30px;line-height:1.4;color:#3D4A42" data-build-in="fade 7 auto">Relación fresco : seco de <b>9.0 : 1</b>. El secado retira el 80 % del peso que entra al túnel.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">El balance de materia sigue al kilo de fruta por todo el proceso. La clave física está en el secado: el agua se evapora, pero los sólidos se conservan. La pulpa tiene 17 % de sólidos; si el producto sale con 16 % de humedad, pesa 17 / 84 de la pulpa, o sea el 20 %. Por eso de 9,000 kg de mango salen 998 kg de producto, una relación de 9 a 1. Las mayores pérdidas son la cáscara y la pepa (38 %) y el agua evaporada. Lavado, acondicionado y envasado no cambian el peso, por eso no aparecen.</aside>
+</section>
+<section id="tamano" data-transition="fade">
+<div class="slide" style="background:#F3EDE2;color:#1D2A22;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#96490A">IV · Tamaño de planta</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#13201A">155.7 t al año desde el primer día</h2>
+<p style="position:absolute;left:140px;top:318px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#96490A" data-build-in="fade 1 auto">Capacidad instalada · 155.7 t/año</p>
+<div style="position:absolute;left:140px;top:363px;width:960px;height:3px;background:#C9650C" data-build-in="growx 1 auto"></div>
+<div style="position:absolute;left:160px;top:483px;width:120px;height:357px;background:#13201A;border-radius:4px 4px 0 0;padding:12px 0 0 0" data-build-in="growy 2 auto"><p style="text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#F3EDE2">75 %</p></div>
+<div style="position:absolute;left:360px;top:462px;width:120px;height:378px;background:#13201A;border-radius:4px 4px 0 0;padding:12px 0 0 0" data-build-in="growy 3 auto"><p style="text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#F3EDE2">79 %</p></div>
+<div style="position:absolute;left:560px;top:439px;width:120px;height:401px;background:#13201A;border-radius:4px 4px 0 0;padding:12px 0 0 0" data-build-in="growy 4 auto"><p style="text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#F3EDE2">84 %</p></div>
+<div style="position:absolute;left:760px;top:415px;width:120px;height:425px;background:#13201A;border-radius:4px 4px 0 0;padding:12px 0 0 0" data-build-in="growy 5 auto"><p style="text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#F3EDE2">89 %</p></div>
+<div style="position:absolute;left:960px;top:389px;width:120px;height:451px;background:#13201A;border-radius:4px 4px 0 0;padding:12px 0 0 0" data-build-in="growy 6 auto"><p style="text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#F3EDE2">95 %</p></div>
+<div style="position:absolute;left:160px;top:852px;width:920px;display:flex;gap:80px"><p style="width:120px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">2027</p><p style="width:120px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">2028</p><p style="width:120px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">2029</p><p style="width:120px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">2030</p><p style="width:120px;text-align:center;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">2031</p></div>
+<p style="position:absolute;left:1180px;top:300px;width:612px;font-size:30px;line-height:1.4;color:#3D4A42" data-build-in="fade 7 auto"><b style="color:#13201A">998 kg/día × 156 días</b> de campaña, de noviembre a abril, en 2 turnos</p>
+<p style="position:absolute;left:1180px;top:430px;width:612px;font-size:30px;line-height:1.4;color:#3D4A42" data-build-in="fade 8 auto"><b style="color:#13201A">Estrategia proactiva:</b> se instala desde el inicio la capacidad del año 5</p>
+<p style="position:absolute;left:1180px;top:560px;width:612px;font-size:30px;line-height:1.4;color:#3D4A42" data-build-in="fade 9 auto"><b style="color:#13201A">1,051 t de mango fresco</b> en el año 1: apenas el 0.2 % de lo que produjo Piura</p>
+<p style="position:absolute;left:1180px;top:690px;width:612px;font-size:30px;line-height:1.4;color:#3D4A42" data-build-in="fade 10 auto"><b style="color:#13201A">12 meses de vida útil:</b> se produce en 6 meses y se vende todo el año</p>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">Las barras son la demanda objetivo de cada año (de 116.6 t a 147.3 t, creciendo 6 % anual) y el porcentaje es la utilización de la planta. La línea naranja es la capacidad: 998 kg diarios por 156 días de campaña, 155.7 t al año. Elegimos una estrategia proactiva: instalar desde el inicio la capacidad que se necesitará en el año 5, porque un túnel de secado no se puede ampliar a medias. El costo es empezar con 25 % de capacidad ociosa. La materia prima no es una restricción: necesitamos el 0.2 % del mango de Piura.</aside>
+</section>
+<section id="planta" data-transition="fade">
+<div class="slide" style="background:#13201A;color:#E9E4D8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#F0A030">IV · Distribución y organización</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3EDE2">Una planta en U con 31 personas</h2>
+<svg class="conn" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none"><defs><marker id="cn8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8C978F"/></marker></defs><line x1="278" y1="410" x2="278" y2="450" stroke="#8C978F" stroke-width="3" marker-end="url(#cn8)"/></svg>
+<svg class="conn" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none"><defs><marker id="cn9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8C978F"/></marker></defs><line x1="278" y1="560" x2="278" y2="600" stroke="#8C978F" stroke-width="3" marker-end="url(#cn9)"/></svg>
+<svg class="conn" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none"><defs><marker id="cn10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8C978F"/></marker></defs><line x1="278" y1="710" x2="278" y2="760" stroke="#8C978F" stroke-width="3" marker-end="url(#cn10)"/></svg>
+<svg class="conn" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none"><defs><marker id="cn11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8C978F"/></marker></defs><line x1="878" y1="760" x2="878" y2="710" stroke="#8C978F" stroke-width="3" marker-end="url(#cn11)"/></svg>
+<svg class="conn" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none"><defs><marker id="cn12" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8C978F"/></marker></defs><line x1="878" y1="600" x2="878" y2="560" stroke="#8C978F" stroke-width="3" marker-end="url(#cn12)"/></svg>
+<svg class="conn" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none"><defs><marker id="cn13" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8C978F"/></marker></defs><line x1="878" y1="450" x2="878" y2="410" stroke="#8C978F" stroke-width="3" marker-end="url(#cn13)"/></svg>
+<div style="position:absolute;left:128px;top:300px;width:300px;height:110px;background:#1C2B23;border:1px solid #2E4237;border-radius:6px;display:flex;align-items:center;justify-content:center;padding:0 20px" data-build-in="fade 1 auto"><p style="text-align:center;font-size:26px;line-height:1.3;color:#F3EDE2">Recepción y pesado</p></div>
+<div style="position:absolute;left:128px;top:450px;width:300px;height:110px;background:#1C2B23;border:1px solid #2E4237;border-radius:6px;display:flex;align-items:center;justify-content:center;padding:0 20px" data-build-in="fade 2 auto"><p style="text-align:center;font-size:26px;line-height:1.3;color:#F3EDE2">Lavado y desinfección</p></div>
+<div style="position:absolute;left:128px;top:600px;width:300px;height:110px;background:#1C2B23;border:1px solid #2E4237;border-radius:6px;display:flex;align-items:center;justify-content:center;padding:0 20px" data-build-in="fade 3 auto"><p style="text-align:center;font-size:26px;line-height:1.3;color:#F3EDE2">Pelado y laminado</p></div>
+<div style="position:absolute;left:128px;top:760px;width:900px;height:120px;background:#F0A030;border-radius:6px;display:flex;align-items:center;justify-content:center;padding:0 24px" data-build-in="left 4 auto"><p style="text-align:center;font-size:26px;line-height:1.3;color:#13201A"><b>Túnel de secado (GLP) con presecado solar</b> · ≈ 2.7 t por carga</p></div>
+<div style="position:absolute;left:728px;top:600px;width:300px;height:110px;background:#1C2B23;border:1px solid #2E4237;border-radius:6px;display:flex;align-items:center;justify-content:center;padding:0 20px" data-build-in="fade 5 auto"><p style="text-align:center;font-size:26px;line-height:1.3;color:#F3EDE2">Acondicionado 24 h</p></div>
+<div style="position:absolute;left:728px;top:450px;width:300px;height:110px;background:#1C2B23;border:1px solid #2E4237;border-radius:6px;display:flex;align-items:center;justify-content:center;padding:0 20px" data-build-in="fade 6 auto"><p style="text-align:center;font-size:26px;line-height:1.3;color:#F3EDE2">Envasado y detector de metales</p></div>
+<div style="position:absolute;left:728px;top:300px;width:300px;height:110px;background:#1C2B23;border:1px solid #2E4237;border-radius:6px;display:flex;align-items:center;justify-content:center;padding:0 20px" data-build-in="fade 7 auto"><p style="text-align:center;font-size:26px;line-height:1.3;color:#F3EDE2">Despacho a Paita</p></div>
+<p style="position:absolute;left:448px;top:470px;width:260px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">← zona sucia</p>
+<p style="position:absolute;left:448px;top:520px;width:260px;text-align:right;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">zona limpia →</p>
+<div style="position:absolute;left:1140px;top:300px;width:652px;display:flex;align-items:baseline;gap:28px" data-build-in="rise 8 auto"><p class="count" style="width:150px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:120px;font-weight:800;line-height:1;color:#F0A030">9</p><p style="font-size:30px;line-height:1.4;color:#F3EDE2">trabajadores permanentes</p></div>
+<div style="position:absolute;left:1140px;top:470px;width:652px;display:flex;align-items:baseline;gap:28px" data-build-in="rise 9 auto"><p class="count" style="width:150px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:120px;font-weight:800;line-height:1;color:#F0A030">22</p><p style="font-size:30px;line-height:1.4;color:#F3EDE2">de campaña: 2 supervisores y 20 operarios</p></div>
+<div style="position:absolute;left:1140px;top:640px;width:652px;display:flex;align-items:baseline;gap:28px" data-build-in="rise 10 auto"><p class="count" style="width:150px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:120px;font-weight:800;line-height:1;color:#F0A030">2</p><p style="font-size:30px;line-height:1.4;color:#F3EDE2">turnos de 8 horas en campaña</p></div>
+<p style="position:absolute;left:1140px;top:820px;width:652px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;line-height:1.4;color:#AEB9B0" data-build-in="fade 11 auto">Nave ≈ 600 m² · terreno ≈ 1,500 m²</p>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">Es una distribución por producto, en línea, con forma de U: la fruta entra por un lado y el producto sale por otro, así la zona sucia (recepción, lavado, pelado) nunca se cruza con la zona limpia (acondicionado y envasado). Eso es clave para la inocuidad y el HACCP. El túnel de secado está en la base de la U porque es el equipo más grande. El personal permanente es la parte administrativa y técnica; los 22 de campaña solo trabajan de noviembre a abril.</aside>
+</section>
+<section id="legal" data-transition="fade">
+<div class="slide" style="background:#F3EDE2;color:#1D2A22;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#96490A">IV · Aspectos legales y calidad</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#13201A">Permisos y calidad desde el inicio</h2>
+<table style="position:absolute;left:128px;top:300px;width:1000px;font-size:26px;color:#1D2A22" data-build-in="fade 1 auto">
+<tr style="background:#13201A"><th style="width:62%;color:#F3EDE2">Requisito</th><th style="width:38%;color:#F3EDE2">Entidad</th></tr>
+<tr><td>Constitución S.A.C. y RUC</td><td>SUNARP / SUNAT</td></tr>
+<tr style="background:#E9E1D2"><td>Licencia de funcionamiento e ITSE</td><td>Municipalidad de Sullana</td></tr>
+<tr><td>Instrumento de gestión ambiental</td><td>PRODUCE</td></tr>
+<tr style="background:#E9E1D2"><td>Habilitación sanitaria y plan HACCP</td><td>DIGESA</td></tr>
+<tr><td>Certificado sanitario de exportación</td><td>DIGESA</td></tr>
+<tr style="background:#E9E1D2"><td>Registro de instalación y FSMA</td><td>FDA (EE. UU.)</td></tr>
+<tr><td>Seguridad y salud en el trabajo</td><td>MTPE / SUNAFIL</td></tr>
+</table>
+<p style="position:absolute;left:1180px;top:300px;width:612px;font-size:30px;line-height:1.4;color:#3D4A42" data-build-in="fade 2 auto"><b style="color:#13201A">Inocuidad:</b> BPM, POES y HACCP desde el primer lote</p>
+<p style="position:absolute;left:1180px;top:420px;width:612px;font-size:30px;line-height:1.4;color:#3D4A42" data-build-in="fade 3 auto"><b style="color:#13201A">Calidad:</b> humedad, actividad de agua, color y defectos en cada lote</p>
+<p style="position:absolute;left:1180px;top:540px;width:612px;font-size:30px;line-height:1.4;color:#3D4A42" data-build-in="fade 4 auto"><b style="color:#13201A">Residuos:</b> ≈ 3.2 t/día de cáscara y pepa a compostaje o alimento para ganado</p>
+<p style="position:absolute;left:1180px;top:700px;width:612px;font-size:30px;line-height:1.4;color:#3D4A42" data-build-in="fade 5 auto"><b style="color:#13201A">Seguridad (Ley 29783):</b> guantes anticorte, señalización y extintores</p>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#59625B">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">Para exportar alimentos a EE. UU. no basta con producir: la planta tiene que estar registrada en la FDA y cumplir la ley FSMA, y DIGESA tiene que habilitarla y emitir el certificado sanitario de cada embarque. Por eso el HACCP no se deja para después: es una condición de entrada (lo vimos en el PESTEL). Los residuos son unas 3.2 toneladas diarias de cáscara y pepa, que salen del balance de materia, y se aprovechan como compost o alimento para ganado.</aside>
+</section>
+<section id="cierre" data-transition="fade">
+<div class="slide" style="background:#13201A;color:#E9E4D8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px">
+<p style="position:absolute;left:128px;top:112px;width:1200px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;text-transform:uppercase;color:#F0A030">Conclusiones preliminares</p>
+<h2 style="position:absolute;left:128px;top:150px;width:1664px;font-family:'Bricolage Grotesque', Georgia, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3EDE2">Viable en mercado y en técnica</h2>
+<p style="position:absolute;left:128px;top:300px;width:900px;font-size:30px;line-height:1.4;color:#C9D3CB" data-build-in="rise 1 auto"><b style="color:#F0A030">Mercado:</b> hay una brecha de 3,616 t al año y apuntamos a 116.6 t en el año 1.</p>
+<p style="position:absolute;left:128px;top:430px;width:900px;font-size:30px;line-height:1.4;color:#C9D3CB" data-build-in="rise 2 auto"><b style="color:#F0A030">Estrategia:</b> postura agresiva, con materia prima cercana y un producto diferenciado.</p>
+<p style="position:absolute;left:128px;top:560px;width:900px;font-size:30px;line-height:1.4;color:#C9D3CB" data-build-in="rise 3 auto"><b style="color:#F0A030">Técnico:</b> planta en Sullana de 155.7 t al año, con un proceso simple y probado.</p>
+<p style="position:absolute;left:128px;top:690px;width:900px;font-size:30px;line-height:1.4;color:#C9D3CB" data-build-in="rise 4 auto"><b style="color:#F0A030">Riesgo principal:</b> El Niño, que se mitiga con proveedores en tres valles.</p>
+<div style="position:absolute;left:1120px;top:300px;width:672px;background:#1C2B23;border-top:4px solid #F0A030;padding:36px 40px;display:flex;flex-direction:column;gap:12px" data-build-in="left 5 auto"><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#F0A030">Semana 11</p><p style="font-size:26px;line-height:1.4;color:#F3EDE2">V. Económico: inversión, costos, VAN, TIR, B/C y PRI</p><p style="font-size:26px;line-height:1.4;color:#F3EDE2">VI. Financiero: WACC, flujo financiero y sensibilidad</p><p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#F0A030;padding:16px 0 0 0">Semana 15 · entrega final</p><p style="font-size:26px;line-height:1.4;color:#F3EDE2">VII. Impacto social y ambiental</p><p style="font-size:26px;line-height:1.4;color:#F3EDE2">VIII. Riesgos y mitigación</p><p style="font-size:26px;line-height:1.4;color:#F3EDE2">IX. Conclusiones y recomendaciones</p></div>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#8C978F">MangoSol · Prefactibilidad 2026</p>
+</div>
+<aside class="notes">Cerrar con la conclusión preliminar: el proyecto es viable en lo comercial (hay demanda sin atender) y en lo técnico (proceso simple, materia prima abundante y una localización bien justificada). Falta demostrar la viabilidad económica y financiera, que es lo que viene en la semana 11 con el VAN, la TIR y el WACC. El riesgo que más vigilaremos es El Niño.</aside>
+</section>
+</div></div>
+<script src="lib/reveal.js"></script>
+<script src="lib/notes.js"></script>
+<script>
+// 1. Entradas: "rise 3 auto" -> clase b-rise con retraso según el orden
+const STEP=.05;
+document.querySelectorAll('[data-build-in]').forEach(el=>{
+  let [k,o]=el.dataset.buildIn.split(' ');
+  if(k==='left'&&el.tagName==='DIV'&&!el.children.length)k='growx'; // las barras crecen desde la izquierda
+  el.classList.add('b','b-'+k);
+  el.style.setProperty('--d',((+o||1)-1)*STEP+'s');
+});
+// 2. Números que cuentan desde cero (clase "count")
+const counters=[...document.querySelectorAll('.count')].map(el=>({el,tpl:el.textContent}));
+function countUp(slide){
+  counters.filter(c=>slide.contains(c.el)).forEach(c=>{
+    const m=c.tpl.match(/\d[\d,]*(\.\d+)?/);if(!m)return;
+    const dec=(m[1]||'').length?m[1].length-1:0,target=parseFloat(m[0].replace(/,/g,''));
+    const d=parseFloat(getComputedStyle(c.el).getPropertyValue('--d'))||0,t0=performance.now()+d*1000,dur=700;
+    const fmt=v=>v.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+    c.el.textContent=c.tpl.replace(m[0],fmt(0));
+    (function f(t){const p=Math.min(Math.max((t-t0)/dur,0),1),e=1-Math.pow(1-p,3);
+      c.el.textContent=c.tpl.replace(m[0],fmt(target*e));if(p<1)requestAnimationFrame(f)})(performance.now());
+  });
+}
+// 3. Gráficos animados en iframes: se recargan al entrar a la diapositiva para que se dibujen desde cero
+function playAnims(slide){
+  document.querySelectorAll('iframe.anim').forEach(f=>{
+    if(slide&&slide.contains(f)){f.src=f.dataset.src+(f.dataset.src.includes('?')?'&':'?')+'v='+Date.now();}
+    else if(f.getAttribute('src')!=='about:blank'){f.src='about:blank';}
+  });
+}
+document.querySelectorAll('path.draw,line.draw,polyline.draw').forEach(p=>p.style.setProperty('--len',Math.ceil(p.getTotalLength())));
+const deck=new Reveal({width:1920,height:1080,margin:0,minScale:0.1,maxScale:3,center:false,hash:true,transition:'fade',controls:true,progress:true,slideNumber:'c/t',autoAnimateDuration:.7,plugins:[RevealNotes]});
+deck.initialize().then(()=>{const s=deck.getCurrentSlide();playAnims(s);countUp(s)});
+deck.on('slidechanged',e=>{playAnims(e.currentSlide);countUp(e.currentSlide)});
+</script>
+</body>
+</html>

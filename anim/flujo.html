@@ -1,0 +1,80 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap">
+<style>
+/* Flujograma DOP animado: los lotes de mango recorren la U y se encogen según el balance de materia */
+body{margin:0;background:transparent;overflow:hidden;font-family:'IBM Plex Sans',Arial,sans-serif}
+svg text{font-size:24px;fill:#F3EDE2}
+.mono{font-family:'IBM Plex Mono',Consolas,monospace}
+.kg{fill:#AEB9B0}.pcc{fill:#F0A030}
+.node{opacity:0;transform-box:fill-box;transform-origin:center;animation:pop .4s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes pop{0%{opacity:0;transform:scale(.6)}70%{opacity:1;transform:scale(1.06)}100%{opacity:1;transform:none}}
+.lbl{opacity:0;animation:fd .5s forwards}@keyframes fd{to{opacity:1}}
+#track{stroke-dasharray:3600;stroke-dashoffset:3600;animation:dr .8s ease forwards}@keyframes dr{to{stroke-dashoffset:0}}
+.ring{fill:none;stroke:#F0A030;stroke-width:4;transform-box:fill-box;transform-origin:center}
+@media (prefers-reduced-motion:reduce){.node,.lbl{animation:none;opacity:1}#track{animation:none;stroke-dashoffset:0}}
+</style></head><body>
+<svg id="s" width="1664" height="530" viewBox="0 0 1664 530"></svg>
+<script>
+const S=document.getElementById('s'),NS='http://www.w3.org/2000/svg';
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||S).appendChild(e);return e}
+function tx(x,y,s,a,p){const e=el('text',Object.assign({x,y,'text-anchor':'middle'},a||{}),p);e.textContent=s;return e}
+const Y1=46,Y2=326,XR=1624;
+// t: op, insp, comb, esp, alm, trans · m: kg/día que salen de la etapa
+const N=[
+ {x:120,y:Y1,t:'comb',l:['Recepción','y pesado'],m:9000},
+ {x:405,y:Y1,t:'insp',l:['Selección y','clasificación'],m:8370},
+ {x:690,y:Y1,t:'op',l:['Lavado y','desinfección'],m:8370},
+ {x:974,y:Y1,t:'op',l:['Pelado, despepado','y laminado'],m:5189},
+ {x:1259,y:Y1,t:'op',l:['Recorte y','pretratamiento'],m:5086},
+ {x:1544,y:Y1,t:'op',l:['Secado híbrido'],m:1029,pcc:'PCC 1',vapor:1},
+ {x:1544,y:Y2,t:'esp',l:['Acondicionado 24 h'],m:1029},
+ {x:1259,y:Y2,t:'insp',l:['Selección final y','detector de metales'],m:998,pcc:'PCC 2'},
+ {x:974,y:Y2,t:'op',l:['Envasado y','etiquetado'],m:998},
+ {x:690,y:Y2,t:'alm',l:['Almacén de','producto'],m:998},
+ {x:405,y:Y2,t:'trans',l:['Transporte','a Paita'],m:998,km:1}
+];
+// recorrido: fila superior a la derecha, baja por el costado y vuelve por la fila inferior
+const L1=XR-N[0].x,L2=Y2-Y1,pos=n=>n.y===Y1?n.x-N[0].x:L1+L2+(XR-n.x),END=pos(N[10])+40;
+function at(s){if(s<=L1)return[N[0].x+s,Y1];if(s<=L1+L2)return[XR,Y1+(s-L1)];return[XR-(s-L1-L2),Y2]}
+el('path',{id:'track',d:`M${N[0].x} ${Y1}H${XR}V${Y2}H${N[10].x-40}`,fill:'none',stroke:'#3E5A4A','stroke-width':4,'stroke-linejoin':'round'});
+const G=el('g',{});
+function sym(n,i){const g=el('g',{class:'node',style:`animation-delay:${.05+i*.04}s`},G),x=n.x,y=n.y;
+ if(n.t==='op')el('circle',{cx:x,cy:y,r:34,fill:'#F0A030'},g);
+ if(n.t==='insp')el('rect',{x:x-33,y:y-33,width:66,height:66,fill:'#13201A',stroke:'#F3EDE2','stroke-width':5},g);
+ if(n.t==='comb'){el('rect',{x:x-36,y:y-36,width:72,height:72,fill:'#13201A',stroke:'#F3EDE2','stroke-width':5},g);el('circle',{cx:x,cy:y,r:20,fill:'#F0A030'},g)}
+ if(n.t==='esp')el('path',{d:`M${x-28} ${y-36}h20a36 36 0 0 1 0 72h-20z`,fill:'#8C978F'},g);
+ if(n.t==='alm')el('path',{d:`M${x-34} ${y-30}H${x+34}L${x} ${y+32}Z`,fill:'#13201A',stroke:'#F3EDE2','stroke-width':5,'stroke-linejoin':'round'},g);
+ if(n.t==='trans')el('path',{d:`M${x-48} ${y-12}h50v-18l42 30-42 30v-18h-50z`,fill:'#F3EDE2'},g);
+ const lg=el('g',{class:'lbl',style:`animation-delay:${.1+i*.04}s`});
+ n.l.forEach((s,j)=>tx(x,y+70+j*30,s,{},lg));
+ const ky=y+70+n.l.length*30+4;
+ n.kgEl=tx(x,ky,(n.pcc?n.pcc+' · ':'')+(n.km?'≈ 60 km':n.m.toLocaleString('en-US')+' kg'),{class:'mono '+(n.pcc?'pcc':'kg')},lg);
+ n.g=g;n.s=pos(n)}
+N.forEach(sym);
+// contador en la esquina libre de la fila inferior
+const cg=el('g',{class:'lbl',style:'animation-delay:.5s'});
+const big=tx(N[0].x,Y2+6,'9.0 : 1',{style:"font-family:'Bricolage Grotesque',sans-serif;font-size:64px;font-weight:800;fill:#F0A030"},cg);
+tx(N[0].x,Y2+48,'kg de fruta',{class:'kg'},cg);tx(N[0].x,Y2+78,'por kg de producto',{class:'kg'},cg);
+const cnt=tx(N[0].x,Y2+126,'lotes: 0',{class:'mono kg'},cg);
+const PL=el('g',{}),TK=el('g',{});
+const lots=[],parts=[];let done=0,last=0;
+const r=m=>7+15*Math.sqrt(m/9000),SPEED=260;
+function mass(s){let m=N[0].m;for(const n of N)if(s>=n.s)m=n.m;return m}
+function spawnLoss(n,lost){const k=n.vapor?14:Math.max(1,Math.round(lost/320));
+ for(let i=0;i<k;i++){const c=el('circle',{r:n.vapor?5:4,fill:n.vapor?'#C9D3CB':'#8C978F'},PL);
+  parts.push({c,x:n.x+(Math.random()-.5)*40,y:n.y,vx:(Math.random()-.5)*30,vy:n.vapor?-(40+Math.random()*60):30+Math.random()*40,life:0,max:1+Math.random()*.6})}}
+function flash(n){const c=el('circle',{cx:n.x,cy:n.y,r:40,class:'ring'},PL);c.animate([{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(1.8)'}],{duration:900,easing:'ease-out'}).onfinish=()=>c.remove()}
+function step(t){const dt=Math.min((t-(step.t||t))/1000,.05);step.t=t;
+ // la posición sale del tiempo transcurrido, así el ritmo no depende de los cuadros por segundo
+ if(t>500&&t-last>1300){last=t;lots.push({t0:t,s:0,c:el('circle',{r:r(9000),fill:'#F0A030',stroke:'#13201A','stroke-width':3},TK),passed:0})}
+ for(let i=lots.length-1;i>=0;i--){const L=lots[i];L.s=(t-L.t0)/1000*SPEED;
+  while(L.passed<N.length&&L.s>=N[L.passed].s){const n=N[L.passed],prev=L.passed?N[L.passed-1].m:n.m;
+   if(prev>n.m)spawnLoss(n,prev-n.m);if(n.pcc)flash(n);L.passed++}
+  const [x,y]=at(Math.min(L.s,END)),m=mass(L.s);L.c.setAttribute('cx',x);L.c.setAttribute('cy',y);L.c.setAttribute('r',r(m).toFixed(1));
+  if(L.s>=END){L.c.remove();lots.splice(i,1);done++;cnt.textContent='lotes: '+done}}
+ for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.life+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
+  p.c.setAttribute('cx',p.x.toFixed(1));p.c.setAttribute('cy',p.y.toFixed(1));p.c.setAttribute('opacity',Math.max(0,1-p.life/p.max).toFixed(2));
+  if(p.life>=p.max){p.c.remove();parts.splice(i,1)}}
+ requestAnimationFrame(step)}
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches)requestAnimationFrame(step);
+</script></body></html>
