@@ -69,7 +69,7 @@ canvas#c{display:block;width:100%;height:100%}
   <div class="col"><h2>Teclado y mouse</h2>
    <div><span>Moverse</span><b>W A S D / flechas</b></div><div><span>Mirar</span><b>Mouse</b></div>
    <div><span>Correr</span><b>Shift</b></div><div><span>Ficha del área</span><b>E</b></div>
-   <div><span>Mapa</span><b>M</b></div><div><span>Ir a un área</span><b>1–8 · 9 solar · 0 exterior</b></div>
+   <div><span>Mapa</span><b>M</b></div><div><span>Ir a un área</span><b>1–8 · 9 presecado (5A) · 0 exterior</b></div>
    <div><span>Área anterior / siguiente</span><b>Q / R</b></div><div><span>Detalle para el expositor</span><b>T</b></div><div><span>Desplazar la ficha</span><b>Rueda del mouse</b></div><div><span>Pausa / continuar</span><b>Esc / Enter</b></div></div>
   <div class="col"><h2>Mando (Xbox, PlayStation u otro)</h2>
    <div><span>Moverse</span><b>Stick izquierdo</b></div><div><span>Mirar</span><b>Stick derecho</b></div>
@@ -104,10 +104,10 @@ const INFO={
  r4:{t:'Pelado, laminado y pretratamiento',z:'Zona sucia · área 4',d:'Operaciones: pelado y despepado · recorte y pretratamiento',r:'Pelado manual con cuchillos de acero inoxidable, láminas de 6–8 mm y baño de ácido cítrico y ascórbico para que no se oscurezcan.',
   f:[['Entra','8,370 kg'],['Pulpa (62 %)','5,189 kg · merma 3,181 kg de cáscara y pepa'],['Recorte (−2 %)','5,086 kg · merma 104 kg'],['Equipos','6 mesas inox, 2 rebanadoras, 2 tinas de 500 L']],
   c:'8,370 × 0.62 = 5,189 kg · 5,189 × 0.98 = 5,086 kg',p:'Es el área con más operarios porque el pelado es manual. La cáscara sale por la puerta norte hacia residuos, sin cruzar la zona limpia.'},
- r5:{t:'Túnel de secado (GLP)',z:'Secado · área 5 · PCC 1',d:'Operación · punto crítico de control n.° 1',r:'Aire caliente a 60–65 °C durante 8 a 10 horas hasta 16 % de humedad. Separa la zona sucia de la limpia.',
+ r5:{t:'Túnel de secado final (GLP)',z:'Secado · área 5B · PCC 1',d:'Operación de secado, segunda parte (5A → 5B) · punto crítico de control n.° 1',r:'Aire caliente a 60–65 °C durante 8 a 10 horas hasta 16 % de humedad. Separa la zona sucia de la limpia.',
   f:[['Entra','5,086 kg de láminas (83 % de agua)'],['Sale','1,029 kg (16 % de humedad)'],['Agua evaporada','4,056 kg: 80 % de lo que entra'],['Capacidad','24 carros × 25 bandejas ≈ 2.7 t por carga'],['Ciclos','2 al día: 5,086 ÷ 2 = 2,543 kg → margen de 6 %'],['Límite crítico','Humedad ≤ 18 %; si no, crecen hongos']],
   c:'Sólidos = 5,086 × 0.17 = 864.6 kg · 864.6 ÷ 0.84 = 1,029 kg',p:'Los sólidos no se evaporan: solo se va el agua. Con esa regla sale todo el balance.'},
- solar:{t:'Secador solar de presecado',z:'Exterior · secado',d:'Parte de la operación de secado',r:'Invernadero de 100 m² que aprovecha el sol de Sullana para quitar parte del agua antes del túnel.',
+ solar:{t:'Presecado solar',z:'Secado · área 5A · exterior',d:'Operación de secado, primera parte (5A → 5B)',r:'Invernadero de 100 m² que aprovecha el sol de Sullana para quitar parte del agua antes del túnel.',
   f:[['Área','100 m²'],['Efecto','≈ 25 % menos GLP'],['GLP año 1','≈ 48 t, ya con el ahorro solar']],
   c:null,p:'Responde a los factores tecnológico y ecológico del PESTEL: menos combustible y menos huella de carbono.'},
  r6:{t:'Enfriado y selección final',z:'Zona limpia · área 6 · PCC 2',d:'Espera (24 h) + inspección · punto crítico de control n.° 2',r:'Las láminas reposan 24 h para igualar su humedad; luego se retiran las rotas u oscuras y todo pasa por el detector de metales.',
@@ -140,7 +140,7 @@ const INFO={
 const ROOMS=[];
 function R(id,x,y,w,h,zona,num){ROOMS.push({id,zona,num,x0:x,x1:x+w,z0:25-(y+h),z1:25-y})}
 R('r1',0,17,7,8,'sucia',1);R('r2',7,17,8,8,'sucia',2);R('r3',15,17,8,8,'sucia',3);R('r4',23,17,10,8,'sucia',4);
-R('r5',33,9,7,16,'secado',5);R('r6',23,9,10,8,'limpia',6);R('r7',13,9,10,8,'limpia',7);R('r8',0,9,13,8,'limpia',8);
+R('r5',33,9,7,16,'secado','5B');R('r6',23,9,10,8,'limpia',6);R('r7',13,9,10,8,'limpia',7);R('r8',0,9,13,8,'limpia',8);
 R('of',0,0,9,9,'serv');R('lab',9,0,7,9,'serv');R('ves',16,0,8,9,'serv');R('cal',24,0,8,9,'serv');R('res',32,0,8,9,'serv');
 const SOLAR={id:'solar',x0:41.5,x1:51.5,z0:2,z1:12};
 const ZCOL={sucia:0x9FB3A4,limpia:0xDCD3BE,secado:0xBFA27E,serv:0xB4B8B3};
@@ -149,7 +149,7 @@ const ZHEX={sucia:'#6F8A77',limpia:'#CFC3A6',secado:'#D9A766',serv:'#59625C'};
 const DOORS={'r1|r2':[6.2,3],'r2|r3':[6.2,3],'r3|r4':[6.2,3],'r4|r5':[6.2,3],'r5|r6':[14.2,3],'r6|r7':[14.2,3],'r7|r8':[14.2,3],
  'of|r8':[4.5,1.8],'lab|of':[20.5,1.4],'lab|r7':[14.5,1.6],'lab|ves':[20.5,1.4],'r7|ves':[19.5,1.8],'cal|ves':[20.5,1.4]};
 const VENT=new Set(['r1|r8','r2|r8','r2|r7','r3|r7','r4|r6']);
-const STATIONS=[['r1',5.2,5.3,.6],['r2',11,5.3,0],['r3',19.5,5.3,0],['r4',29.5,5.3,.45],['r5',35.6,15.6,-.15],['solar',46.5,16,0],
+const STATIONS=[['r1',5.2,5.3,.6],['r2',11,5.3,0],['r3',19.5,5.3,0],['r4',29.5,5.3,.45],['solar',46.5,10.6,0],['r5',35.6,15.6,-.15],
  ['r6',28,13.3,0],['r7',18,13.3,0],['r8',7,13.3,.3],['ext',3.5,-14,Math.PI],['lab',12.5,18.2,Math.PI],['of',5,18,2.36],
  ['ves',20,18,Math.PI],['cal',26.5,21.8,-.85],['res',36,22.8,0]];
 
@@ -436,7 +436,7 @@ function hud(){const c=Math.hypot(P.x-ING.x,P.z-ING.z)<3;if(c!==cerca){cerca=c;h
  $('aZona').textContent=d.z;$('aNom').textContent=d.t;if(cardOn)renderCard();
  if(id==='r5'||id==='r6')rumble()}
 function helpText(){$('help').textContent=padOn?'Stick izq. moverse · Stick der. mirar · RT correr · A ficha · Y mapa · LB/RB otra área · Start pausa'
- :'WASD moverse · Mouse mirar · Shift correr · E ficha · M mapa · 1–8 áreas · Q/R anterior/siguiente · Esc pausa';
+ :'WASD moverse · Mouse mirar · Shift correr · E ficha · M mapa · 1–8 áreas · 9 presecado · Q/R anterior/siguiente · Esc pausa';
  hint()}
 function hint(){$('aHint').textContent=(padOn?'Botón A / ✕':'Tecla E')+(cerca?': hablar con el Ing. Jimmy Nicola':': ver la ficha del área')}
 
@@ -452,7 +452,7 @@ function drawMap(cv,big){const g=cv.getContext('2d'),W=cv.width,Hh=cv.height,sx=
    for(const w of((r.num?r.num+'. ':'')+SHORT[r.id]).split(' ')){const t=ln?ln+' '+w:w;if(ln&&g.measureText(t).width>maxW){ls.push(ln);ln=w}else ln=t}
    ls.push(ln);const cy=Z((r.z0+r.z1)/2)-(ls.length-1)*13+8;ls.forEach((t,i)=>g.fillText(t,X((r.x0+r.x1)/2),cy+i*26))}}
  g.strokeStyle=cur==='solar'?'#F0A030':'#AEB9B0';g.lineWidth=big?4:2;g.strokeRect(X(SOLAR.x0),Z(SOLAR.z0),10*sx,10*sz);
- if(big){g.fillStyle='#F3EDE2';g.fillText('9. Secador solar',X(46.5),Z(7)+8);g.fillText('0. Ingreso',X(3.5),Z(-12));
+ if(big){g.fillStyle='#F3EDE2';g.fillText('5A. Presecado',X(46.5),Z(7)-5);g.fillText('solar',X(46.5),Z(7)+21);g.fillText('0. Ingreso',X(3.5),Z(-12));
   g.fillStyle='#AEB9B0';g.font="500 20px 'IBM Plex Mono',monospace";g.fillText('N ↑',X(-11),Z(-13))}
  const px=X(P.x),pz=Z(P.z),fx=-Math.sin(P.yaw),fz=-Math.cos(P.yaw),k=big?22:12;
  g.fillStyle='#F0A030';g.beginPath();g.moveTo(px+fx*k,pz+fz*k);g.lineTo(px-fz*k*.55-fx*k*.5,pz+fx*k*.55-fz*k*.5);g.lineTo(px+fz*k*.55-fx*k*.5,pz-fx*k*.55-fz*k*.5);g.closePath();g.fill()}
@@ -530,7 +530,7 @@ Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]).then(()=
  label('PCC 1 · humedad ≤ 18 %',null,37,3.3,12.9,3.4,'#13201A','rgba(240,160,48,.95)');
  label('PCC 2 · detector de metales',null,30.7,2.4,14.4,2.8,'#13201A','rgba(240,160,48,.95)');
  label('Acondicionado 24 h',null,26.5,2.35,9.2,2.6);
- label('Secador solar · 100 m²','9 · PRESECADO',46.5,4.6,12.2,4.4);
+ label('Presecado solar · 100 m²','5A · SECADO',46.5,4.6,12.2,4.4);
  label('Sol de Tambogrande S.A.C.','MANGOSOL',5,3.2,-16.6,5);
  label('Descarte 7 %',null,17.2,1.2,7.3,1.4,'#F3EDE2','rgba(192,57,43,.95)');
  label('Contenedor 20\' a Paita',null,-5.6,4.1,12,3.6);
