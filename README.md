@@ -35,7 +35,7 @@ y abrir `http://localhost:8765`.
 - **Contadores:** los números con `class="count"` cuentan desde cero.
 - **Gráficos en `anim/`:** son páginas sueltas que se recargan cada vez que se entra a la diapositiva,
   para que se dibujen desde cero.
-- **Embudo → brecha:** reveal.js *auto-animate* mueve la cifra «116.6 t» de una diapositiva a la otra.
+- **Embudo → brecha:** reveal.js *auto-animate* mueve la cifra «116.6» de una diapositiva a la otra.
 
 ## De dónde salen las cifras
 
