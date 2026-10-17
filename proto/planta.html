@@ -1,0 +1,189 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Planta realista MangoSol</title>
+<link rel="stylesheet" href="../lib/fonts.css">
+<style>
+/* Áreas 4, 5B, 6 y 7 modeladas en Blender: luz precalculada (lightmaps) + reflejos HDR y sombras en tiempo real */
+:root{--osc:#13201A;--pan:rgba(19,32,26,.88);--nar:#F0A030;--cre:#F3EDE2;--gri:#AEB9B0;--lin:#2E4237}
+html,body{margin:0;height:100%;overflow:hidden;background:#0b0f0d;color:var(--cre);font-family:'IBM Plex Sans',Arial,sans-serif}
+canvas{display:block;width:100%;height:100%}
+#hud{position:fixed;left:20px;top:20px;max-width:min(46vw,620px);background:var(--pan);border:1px solid var(--lin);border-radius:6px;padding:12px 16px;pointer-events:none}
+#hud .k{font:500 clamp(12px,.75vw,15px) 'IBM Plex Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--nar)}
+#hud h1{margin:4px 0 6px;font:800 clamp(22px,1.9vw,40px)/1.1 'Bricolage Grotesque',Georgia,sans-serif;letter-spacing:-.02em}
+#hud p{margin:0;font-size:clamp(14px,.95vw,19px);line-height:1.45;color:#D8E0D9}
+#hud .dato{margin-top:8px;font:500 clamp(13px,.85vw,17px)/1.5 'IBM Plex Mono',monospace;color:var(--osc);background:var(--nar);padding:.4em .7em;border-radius:4px}
+#ayuda{position:fixed;left:20px;bottom:18px;font:500 clamp(12px,.8vw,16px) 'IBM Plex Mono',monospace;background:var(--pan);padding:8px 12px;border-radius:6px}
+#menu{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(11,15,13,.88)}
+#menu.off{display:none}
+#menu .box{max-width:680px;padding:28px}
+#menu .k{font:500 14px 'IBM Plex Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:var(--nar)}
+#menu h2{margin:8px 0 12px;font:800 44px/1.05 'Bricolage Grotesque',Georgia,sans-serif}
+#menu p{margin:0 0 18px;font-size:17px;line-height:1.5;color:#D8E0D9;max-width:62ch}
+#barra{height:6px;background:var(--lin);border-radius:3px;overflow:hidden;margin:0 0 18px}
+#barra i{display:block;height:100%;width:0;background:var(--nar);transition:width .2s}
+button{font:700 18px 'IBM Plex Sans',Arial,sans-serif;background:var(--nar);color:var(--osc);border:0;border-radius:6px;padding:12px 22px;cursor:pointer}
+button:disabled{opacity:.5;cursor:wait}
+a{color:var(--cre);margin-left:16px}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="hud"><div class="k" id="hk">Exterior · ingreso</div><h1 id="hn">Llega el mango fresco</h1><p id="hp"></p><div class="dato" id="hd"></div></div>
+<div id="ayuda">WASD / stick izq. moverse · mouse / stick der. mirar · Shift / RT correr · Esc pausa</div>
+<div id="menu"><div class="box">
+ <div class="k">MangoSol · versión realista</div>
+ <h2>De la fruta fresca al contenedor</h2>
+ <p>Recorre la planta completa siguiendo el producto: el camión de mango, las áreas 1 a 8 (con el túnel, PCC 1, y el detector de metales, PCC 2) y el contenedor que sale a Paita. Modelada en Blender con materiales reales y la luz calculada con Cycles.</p>
+ <div id="barra"><i></i></div>
+ <button id="go" disabled>Cargando…</button><a href="../recorrido.html">Recorrido completo</a><a href="../index.html#/planta">Presentación</a>
+</div></div>
+<script src="../lib/three.min.js"></script>
+<script src="../lib/GLTFLoader.js"></script>
+<script src="../lib/RGBELoader.js"></script>
+<script>
+// ---------- áreas: mismas cifras del informe ----------
+const AREAS=[
+ {x0:0,x1:7,z0:0,z1:8,k:'Área 1 · zona sucia',n:'Recepción y pesado',p:'Se pesa cada pallet de jabas y se registra el lote y el proveedor: trazabilidad.',d:'Año 1: 116.6 t × 9.0 = 1,051 t de fruta = 0.2 % de lo que produce Piura'},
+ {x0:7,x1:15,z0:0,z1:8,k:'Área 2 · cámara fría',n:'Almacén de materia prima',p:'La fruta pintona termina de madurar a 12–14 °C antes de entrar al proceso.',d:'Relación A con recepción: absolutamente necesaria'},
+ {x0:15,x1:23,z0:0,z1:8,k:'Área 3 · zona sucia',n:'Selección y lavado',p:'Se descarta la fruta dañada y se lava por inmersión y aspersión con agua clorada a 100 ppm.',d:'9,000 × 0.93 = 8,370 kg · −630 kg de descarte (7 %)'},
+ {x0:23,x1:33,z0:0,z1:8,k:'Área 4 · zona sucia',n:'Pelado, laminado y pretratamiento',p:'Pelado manual con cuchillos de acero, láminas de 6–8 mm y baño de ácido cítrico y ascórbico.',d:'8,370 kg × 0.62 = 5,189 kg de pulpa · −3,181 kg de cáscara y pepa'},
+ {x0:33,x1:40,z0:0,z1:16,k:'Área 5B · secado · PCC 1',n:'Túnel de secado (GLP)',p:'Aire a 60–65 °C durante 8 a 10 h, hasta 16 % de humedad. 24 carros × 25 bandejas.',d:'5,086 × 0.17 = 864.6 kg de sólidos · ÷ 0.84 = 1,029 kg'},
+ {x0:23,x1:33,z0:8,z1:16,k:'Área 6 · zona limpia · PCC 2',n:'Enfriado y selección final',p:'Reposo de 24 h en bandejas; se retiran láminas rotas y todo pasa por el detector de metales (Fe 1.5 mm).',d:'1,029 × 0.97 = 998 kg · 9,000 ÷ 998 = 9.0 : 1'},
+ {x0:13,x1:23,z0:8,z1:16,k:'Área 7 · zona limpia',n:'Envasado',p:'Bolsa de polietileno grado alimentario dentro de caja de 10 kg, con lote y fecha.',d:'998 kg/día ÷ 10 = ≈ 100 cajas al día'},
+ {x0:0,x1:13,z0:8,z1:16,k:'Área 8 · zona limpia',n:'Almacén de producto terminado',p:'Pallets de 45 cajas de 10 kg, envueltos en film, listos para el contenedor.',d:'998 kg × 156 días = 155.7 t/año de capacidad'},
+ {x0:-16,x1:16,z0:-20,z1:0,k:'Exterior · ingreso',n:'Llega el mango fresco',p:'Camión con jabas de mango Kent desde Tambogrande y el valle de San Lorenzo (≈ 35 km).',d:'9,000 kg/día · 156 días de campaña (noviembre a abril)'},
+ {x0:-16,x1:0,z0:0,z1:18,k:'Exterior · despacho',n:'Contenedor de 20 pies a Paita',p:'Se carga por el andén del almacén y viaja ≈ 60 km al puerto de Paita.',d:'≈ 10 t por contenedor ≈ 10 días de producción · año 1: ≈ 12 contenedores'}];
+const $=id=>document.getElementById(id);let areaAct=null;
+let cerca=false;
+function hud(){if(typeof ING!=='undefined'&&Math.hypot(P.x-ING.x,P.z-ING.z)<3.2){if(!cerca){cerca=true;areaAct=null;const i=ING.info;
+  $('hk').textContent=i.k;$('hn').textContent=i.n;$('hp').textContent=i.p;$('hd').textContent=i.d}return}
+ cerca=false;const a=AREAS.find(a=>P.x>=a.x0&&P.x<=a.x1&&P.z>=a.z0&&P.z<=a.z1);if(!a||a===areaAct)return;areaAct=a;
+ $('hk').textContent=a.k;$('hn').textContent=a.n;$('hp').textContent=a.p;$('hd').textContent=a.d}
+
+// ---------- render ----------
+const cv=$('c');
+const R=new THREE.WebGLRenderer({canvas:cv,antialias:true});
+R.setPixelRatio(Math.min(devicePixelRatio,1.5));
+R.outputEncoding=THREE.sRGBEncoding;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=.85;
+R.physicallyCorrectLights=true;R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+const S=new THREE.Scene();S.background=new THREE.Color(0x0b0f0d);
+const cam=new THREE.PerspectiveCamera(68,1,.05,80);cam.rotation.order='YXZ';
+S.add(new THREE.HemisphereLight(0xf4f1ea,0x30302c,.45));
+const sol=new THREE.DirectionalLight(0xfff3e4,2.2);sol.position.set(20,22,-6);sol.target.position.set(12,0,0);
+sol.castShadow=true;sol.shadow.mapSize.set(4096,4096);sol.shadow.bias=-.0004;sol.shadow.normalBias=.02;
+Object.assign(sol.shadow.camera,{left:-32,right:32,top:26,bottom:-26,near:1,far:70});S.add(sol,sol.target);
+const calor=new THREE.PointLight(0xff9a40,6,7,2);calor.position.set(37,2.1,7);S.add(calor);
+
+const man=new THREE.LoadingManager();
+man.onProgress=(u,l,t)=>document.querySelector('#barra i').style.width=(l/t*100)+'%';
+const HORNEADO={Piso:'planta_luz_piso.jpg',Muros:'planta_luz_muros.jpg',Techo:'planta_luz_techo.jpg',Suelo:'planta_luz_suelo.jpg'},ESCALA=1/.35;
+const tl=new THREE.TextureLoader(man);
+new THREE.RGBELoader(man).setDataType(THREE.UnsignedByteType).load('tex/empty_warehouse_01_1k.hdr',hdr=>{
+ const pm=new THREE.PMREMGenerator(R);S.environment=pm.fromEquirectangular(hdr).texture;hdr.dispose();pm.dispose()});
+let COL=[];fetch('colisiones.json').then(r=>r.json()).then(j=>COL=j.cols.concat([[.6,1.2,-1.55,-.95],[-.95,.05,-1.35,-.95]]));  // + ingeniero y banner
+tl.load('tex/cielo_2k.jpg',t=>{t.mapping=THREE.EquirectangularReflectionMapping;t.encoding=THREE.sRGBEncoding;S.background=t});
+new THREE.GLTFLoader(man).load('planta.glb',g=>{
+ const luces={};
+ g.scene.traverse(o=>{if(!o.isMesh)return;
+  const clave=Object.keys(HORNEADO).find(k=>o.name.startsWith(k));
+  if(clave&&o.geometry.attributes.uv2){
+   const t=luces[clave]||(luces[clave]=tl.load('tex/'+HORNEADO[clave]));t.flipY=false;t.encoding=THREE.sRGBEncoding;
+   const m=o.material;o.material=new THREE.MeshBasicMaterial({map:m.map,color:m.color,lightMap:t,lightMapIntensity:ESCALA})}
+  else{const m=o.material;
+   m.envMapIntensity=m.metalness>.5?1.1:.45;            // el acero vive de sus reflejos
+   if(m.map&&/^(Letrero|PCC|Pantalla|EPP|Display|Logo|Fachada|Indicador|Term)/.test(m.name)){   // letreros y pantallas legibles
+    m.emissive=new THREE.Color(1,1,1);m.emissiveMap=m.map;m.emissiveIntensity=/^(Pantalla|Display)/.test(m.name)?1:.5}
+   if(m.name.startsWith('Vidrio')){m.emissive=new THREE.Color(.55,.58,.58);m.emissiveIntensity=.5}
+   o.castShadow=!m.transparent;o.receiveShadow=true}});
+ S.add(g.scene)});
+// ---------- Ing. Jimmy Nicola, ingeniero de planta, en la puerta de ingreso ----------
+const ING={x:.9,z:-1.25,info:{k:'Ingeniero de planta',n:'Ing. Jimmy Nicola',
+ p:'¡Bienvenidos a Sol de Tambogrande S.A.C.! Sigan el producto: del camión a la recepción, la U del proceso y el contenedor que sale a Paita.',
+ d:'9,000 kg de fruta → 998 kg de producto = 9.0 : 1'}};
+const ing=(()=>{const g=new THREE.Group(),std=(c,r=.6,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
+ const piel=std(0xb98058,.55),pant=std(0x2b3440,.85),camisa=std(0x6f8fb3,.75),chaleco=std(0xff6a10,.55),cinta=std(0xd9dde0,.2,.7),bota=std(0x1e1a17,.45),casco=std(0xf4f4f0,.28);
+ const add=(geo,m,x,y,z,p)=>{const me=new THREE.Mesh(geo,m);me.position.set(x,y,z);me.castShadow=true;me.receiveShadow=true;p.add(me);return me};
+ const piernas=[-1,1].map(s=>{const pv=new THREE.Group();pv.position.set(s*.1,.92,0);g.add(pv);
+  add(new THREE.CylinderGeometry(.075,.06,.86,16),pant,0,-.43,0,pv);add(new THREE.BoxGeometry(.13,.1,.28),bota,0,-.87,-.04,pv);return pv});
+ const perfil=[[0,0],[.17,0],[.19,.08],[.2,.3],[.21,.45],[.2,.52],[.12,.58],[0,.6]].map(p=>new THREE.Vector2(p[0],p[1]));
+ const cu=new THREE.Group();cu.position.y=.9;g.add(cu);
+ add(new THREE.LatheGeometry(perfil,24),camisa,0,0,0,cu).scale.set(1,1,.72);                       // torso
+ add(new THREE.LatheGeometry(perfil.slice(0,6).map(v=>new THREE.Vector2(v.x*1.07,v.y)),24),chaleco,0,0,0,cu).scale.set(1,1,.75); // chaleco
+ for(const y of[.17,.3])add(new THREE.CylinderGeometry(.212,.208,.03,24,1,true),cinta,0,y,0,cu).scale.set(1,1,.77); // cintas reflectivas
+ add(new THREE.CylinderGeometry(.05,.055,.08,12),piel,0,.63,0,cu);
+ add(new THREE.SphereGeometry(.105,24,16),piel,0,.76,0,cu).scale.set(1,1.18,1.08);
+ add(new THREE.SphereGeometry(.125,24,12,0,Math.PI*2,0,Math.PI/2),casco,0,.8,0,cu).scale.set(1,.95,1.1);
+ add(new THREE.CylinderGeometry(.15,.15,.012,24),casco,0,.8,-.02,cu).scale.set(1,1,1.15);
+ add(new THREE.BoxGeometry(.17,.035,.02),std(0x15191c,.1,.3),0,.775,-.1,cu);                       // lentes de seguridad
+ const brazos=[-1,1].map(s=>{const pv=new THREE.Group();pv.position.set(s*.25,.52,0);cu.add(pv);
+  add(new THREE.CylinderGeometry(.055,.048,.3,12),camisa,0,-.15,0,pv);
+  const ab=new THREE.Group();ab.position.y=-.3;pv.add(ab);
+  add(new THREE.CylinderGeometry(.045,.04,.27,12),camisa,0,-.135,0,ab);add(new THREE.SphereGeometry(.045,12,8),piel,0,-.29,0,ab);
+  pv.userData.ab=ab;return pv});
+ add(new THREE.BoxGeometry(.24,.32,.015),std(0x8b6b43,.7),0,-.3,-.08,brazos[0].userData.ab);         // tablero
+ g.position.set(ING.x,0,ING.z);S.add(g);return{g,cu,brazos}})();
+function lienzo(w,h,dibujar){const c=document.createElement('canvas');c.width=w;c.height=h;dibujar(c.getContext('2d'),w,h);
+ const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
+function mangoLaminas(x,cx,cy,rx,ry){x.save();x.translate(cx,cy);x.rotate(-.24);x.beginPath();x.ellipse(0,0,rx,ry,0,0,Math.PI*2);x.clip();
+ x.fillStyle='#F0A030';[0,6,-4,8,-3,5,-7,3,-5,7,0].forEach((d,i)=>x.fillRect(-rx-10+d,-ry+i*ry*2/11,rx*2+20,ry*2/11*.74));x.restore()}
+document.fonts.ready.then(()=>{
+ // banner roll-up junto al ingeniero
+ const tb=lienzo(512,1200,(x,w,h)=>{x.fillStyle='#13201A';x.fillRect(0,0,w,h);mangoLaminas(x,256,190,95,112);
+  x.textAlign='center';x.fillStyle='#F0A030';x.font="500 30px 'IBM Plex Mono'";x.fillText('BIENVENIDOS A',256,370);
+  x.fillStyle='#F3EDE2';x.font="800 50px 'Bricolage Grotesque'";x.fillText('Sol de Tambogrande',256,435);x.fillText('S.A.C.',256,492);
+  x.fillStyle='#2E4237';x.fillRect(80,560,352,3);
+  x.fillStyle='#AEB9B0';x.font="500 28px 'IBM Plex Mono'";x.fillText('LOS RECIBE',256,640);
+  x.fillStyle='#F3EDE2';x.font="800 64px 'Bricolage Grotesque'";x.fillText('Ing. Jimmy',256,730);x.fillText('Nicola',256,800);
+  x.fillStyle='#F0A030';x.font="600 32px 'IBM Plex Sans'";x.fillText('Ingeniero de planta',256,870);
+  x.fillStyle='#AEB9B0';x.font="400 26px 'IBM Plex Sans'";x.fillText('Planta de mango deshidratado',256,1080);x.fillText('Sullana · Piura',256,1120)});
+ const ban=new THREE.Group(),alu=new THREE.MeshStandardMaterial({color:0xc8ccd0,metalness:1,roughness:.3});
+ const lona=new THREE.Mesh(new THREE.PlaneGeometry(.85,2.0),new THREE.MeshStandardMaterial({map:tb,roughness:.7,emissive:0xffffff,emissiveMap:tb,emissiveIntensity:.25}));
+ lona.position.y=1.12;lona.rotation.y=Math.PI;lona.castShadow=true;ban.add(lona);
+ const base=new THREE.Mesh(new THREE.BoxGeometry(.9,.1,.22),alu);base.position.y=.05;ban.add(base);
+ const barra=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,.88,8),alu);barra.rotation.z=Math.PI/2;barra.position.y=2.13;ban.add(barra);
+ ban.position.set(-.45,0,-1.15);ban.rotation.y=.25;S.add(ban);
+ // nombre sobre la cabeza
+ const tn=lienzo(1024,220,(x,w,h)=>{x.fillStyle='rgba(19,32,26,.9)';x.beginPath();x.roundRect?x.roundRect(0,0,w,h,30):x.rect(0,0,w,h);x.fill();
+  x.textAlign='center';x.fillStyle='#F3EDE2';x.font="800 84px 'Bricolage Grotesque'";x.fillText('ING. JIMMY NICOLA',w/2,105);
+  x.fillStyle='#F0A030';x.font="500 44px 'IBM Plex Mono'";x.fillText('INGENIERO DE PLANTA',w/2,175)});
+ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tn,transparent:true,depthWrite:false}));sp.scale.set(1.3,.28,1);sp.position.set(ING.x,2.2,ING.z);S.add(sp)});
+function animarIng(t,dt){const [bi,bd]=ing.brazos,dx=P.x-ING.x,dz=P.z-ING.z,d=Math.hypot(dx,dz);
+ ing.cu.scale.y=1+Math.sin(t*1.6)*.006;                                   // respiración
+ bi.rotation.x=.25;bi.userData.ab.rotation.x=1.25;                         // sostiene el tablero
+ if(d<9){const a=Math.atan2(-dx,-dz),dif=((a-ing.g.rotation.y+Math.PI*3)%(Math.PI*2))-Math.PI;ing.g.rotation.y+=dif*Math.min(1,dt*4)}
+ const saluda=d<7;bd.rotation.z+=((saluda?2.55+Math.sin(t*9)*.3:.08)-bd.rotation.z)*Math.min(1,dt*6);
+ bd.userData.ab.rotation.z=saluda?Math.sin(t*9+1)*.35:0}
+
+man.onLoad=()=>{const b=$('go');b.disabled=false;b.textContent='Recorrer'};
+
+// ---------- caminar ----------
+const P={x:-1.5,z:-14.5,yaw:-2.76,pitch:.02};  // afuera, frente al camión de mango
+const PISABLE=[[0,40,0,16],[-16,16,-20,0],[-16,0,0,18]];  // nave, patio de ingreso y patio de despacho
+const RAD=.3,blk=(x,z)=>{if(!PISABLE.some(r=>x>=r[0]&&x<=r[1]&&z>=r[2]&&z<=r[3]))return true;
+ return COL.some(c=>x>c[0]-RAD&&x<c[1]+RAD&&z>c[2]-RAD&&z<c[3]+RAD)};
+const keys=new Set();let jugando=false,prev=[];
+addEventListener('keydown',e=>{keys.add(e.code);if(e.code==='Escape')pausa();if(!jugando&&e.code==='Enter'&&!$('go').disabled)$('go').click()});
+addEventListener('keyup',e=>keys.delete(e.code));addEventListener('blur',()=>keys.clear());
+addEventListener('mousemove',e=>{if(document.pointerLockElement!==cv)return;P.yaw-=e.movementX*.0022;P.pitch=Math.max(-1.3,Math.min(1.3,P.pitch-e.movementY*.0022))});
+const bloquear=()=>{try{const r=cv.requestPointerLock();r&&r.catch&&r.catch(()=>{})}catch(e){}};  // el navegador puede negarlo: se sigue sin mouse
+$('go').onclick=()=>{jugando=true;$('menu').classList.add('off');bloquear()};
+cv.onclick=()=>{if(jugando&&document.pointerLockElement!==cv)bloquear()};
+document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement!==cv&&jugando)pausa()});
+function pausa(){jugando=false;$('menu').classList.remove('off');$('go').textContent='Continuar'}
+const dz=v=>Math.abs(v)<.15?0:(v-Math.sign(v)*.15)/.85;
+function pad(dt){const p=[...(navigator.getGamepads?navigator.getGamepads():[])].find(g=>g&&g.connected);if(!p)return{f:0,s:0,run:false};
+ const b=i=>p.buttons[i]&&p.buttons[i].pressed,ed=i=>b(i)&&!prev[i];let o={f:0,s:0,run:false};
+ if(!jugando){if((ed(0)||ed(9))&&!$('go').disabled){jugando=true;$('menu').classList.add('off')}}
+ else{o.s=dz(p.axes[0]||0);o.f=-dz(p.axes[1]||0);P.yaw-=dz(p.axes[2]||0)*2.4*dt;P.pitch=Math.max(-1.3,Math.min(1.3,P.pitch-dz(p.axes[3]||0)*1.7*dt));
+  o.run=(p.buttons[7]&&p.buttons[7].value>.4)||b(10);if(ed(9))pausa()}
+ prev=p.buttons.map(x=>x.pressed);return o}
+function resize(){R.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}
+addEventListener('resize',resize);resize();
+const clk=new THREE.Clock();
+(function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),.05),g=pad(dt);
+ if(jugando){const k=c=>keys.has(c)?1:0;let f=k('KeyW')+k('ArrowUp')-k('KeyS')-k('ArrowDown')+g.f,s=k('KeyD')+k('ArrowRight')-k('KeyA')-k('ArrowLeft')+g.s;
+  const l=Math.hypot(f,s);if(l>1){f/=l;s/=l}const sp=(keys.has('ShiftLeft')||g.run?4.5:2.4)*dt,sy=Math.sin(P.yaw),cy=Math.cos(P.yaw);
+  const dx=(-sy*f+cy*s)*sp,dzz=(-cy*f-sy*s)*sp;const atrapado=blk(P.x,P.z);  // si quedó dentro de un objeto, se le deja salir
+  if(atrapado||!blk(P.x+dx,P.z))P.x+=dx;if(atrapado||!blk(P.x,P.z+dzz))P.z+=dzz}
+ animarIng(performance.now()/1000,dt);hud();calor.intensity=6+Math.sin(performance.now()/700)*.6;
+ cam.position.set(P.x,1.65,P.z);cam.rotation.set(P.pitch,P.yaw,0);R.render(S,cam)})();
+</script>
+</body></html>

@@ -1,0 +1,12 @@
+# Solo se publica lo que usa planta.html. Lo demás se regenera con los scripts de blender/
+*.blend
+*.blend1
+*.bak
+error_horneado.txt
+render_*.png
+tunel.*
+areas.glb
+tex/*
+!tex/planta_luz_*.jpg
+!tex/empty_warehouse_01_1k.hdr
+!tex/cielo_2k.jpg

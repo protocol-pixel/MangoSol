@@ -14,6 +14,7 @@ demás entregables del estudio no están publicados aquí.
 | `anim/flujo.html` | Flujograma DOP animado: los lotes de mango recorren la U y se encogen según el balance de materia |
 | `anim/peyea.html` | Matriz PEYEA que se dibuja: las cuatro dimensiones como flechas y luego su suma como vector |
 | `recorrido.html` | Recorrido 3D en primera persona por la planta en U (teclado y mouse o mando por Bluetooth/USB); se abre desde la diapositiva 20 |
+| `proto/planta.html` | Versión realista de la planta completa (camión de mango → áreas 1 a 8 → contenedor a Paita): modelada en Blender (`proto/blender/escena_planta.py`), luz precalculada con Cycles y exportada a glTF (`proto/planta.glb`); texturas y cielo de Poly Haven (CC0) |
 | `lib/` | reveal.js 5.1.0, three.js r128 y las fuentes (Bricolage Grotesque, IBM Plex Sans y Mono en `lib/fonts/`), incluidos para que todo funcione sin conexión |
 
 ## Cómo verla
