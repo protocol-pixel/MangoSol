@@ -44,7 +44,10 @@ y abrir `http://localhost:8765`.
   ([CIEN-ADEX, 2025](https://cien.adexperu.org.pe/wp-content/uploads/2025/01/NC_Mango_Ene2025_vf.pdf))
   y producción de mango de Piura en 2025 (Dirección Regional de Agricultura de Piura, vía
   [Agraria.pe](https://agraria.pe/noticias/produccion-de-mango-en-piura-crecio-55-81-en-2025-41552)).
-- **Datos simulados con fines académicos:** encuesta a importadores, precios de los competidores y
+- **Precio real de referencia:** en 2024 el Perú exportó 379 mil kg de mango deshidratado por US$ 3.7 M, es
+  decir US$ 9.76/kg ([IDEXCAM-CCL, 2025](https://camaralimaplugin.arbitrajeccl.com.pe/wp-content/uploads/2026/03/EXPORTACIONES-PERUANAS-DE-FRUTAS-DESHIDRATADAS-IDEXCAM.DI_.pdf), con datos de SUNAT). El precio de
+  MangoSol (US$ 8.50/kg FOB) es una decisión del proyecto y queda 13 % por debajo.
+- **Datos simulados con fines académicos:** encuesta a importadores, competidores A, B y C con sus precios y
   parámetros del proceso.
 - Los resultados (embudo de mercado, balance de materia, matrices, capacidad) se calcularon en un modelo
   aparte que no forma parte de este repositorio, y **se copiaron a mano** en `index.html`. Si el modelo
